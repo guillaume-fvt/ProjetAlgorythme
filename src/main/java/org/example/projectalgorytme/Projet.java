@@ -9,15 +9,17 @@ public class Projet {
     private String nom;
     private Date dateDebut;
     private Date dateFin;
+    private double budget;
     private List<Tache> listeTaches;
     private List<MembreProjet> membres;
     private static List<Projet> listeProjets = new ArrayList<>();
 
-    public Projet(int id, String nom, Date dateDebut, Date dateFin) {
+    public Projet(int id, String nom, Date dateDebut, Date dateFin,double budget) {
         this.id = id;
         this.nom = nom;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
+        this.budget=budget;
         this.listeTaches = new ArrayList<>();
         this.membres = new ArrayList<>();
     }
@@ -49,6 +51,14 @@ public class Projet {
 
     public void setDateFin(Date dateFin) {
         this.dateFin = dateFin;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
     }
 
     public List<Tache> getListeTaches() {
