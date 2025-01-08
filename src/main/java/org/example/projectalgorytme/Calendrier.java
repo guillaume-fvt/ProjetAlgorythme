@@ -30,13 +30,13 @@ public class Calendrier {
 
         // Afficher les jours vides avant le premier jour du mois
         for (int i = 0; i < decallage; i++) {
-            System.out.print("   ");
+            System.out.print("    ");  // Utilisation de 4 espaces pour garantir une largeur uniforme
         }
 
         // Afficher les jours du mois
         for (int jour = 1; jour <= joursDansMois; jour++) {
-            // Afficher le jour de la semaine
-            System.out.print(String.format("%2d ", jour));
+            // Formater chaque jour pour avoir une largeur fixe de 4 caractères (3 espaces + le chiffre du jour)
+            System.out.print(String.format("%4d", jour));
 
             // Vérifier si des tâches sont prévues pour ce jour
             afficherTachesDuJour(jour, mois, annee);
