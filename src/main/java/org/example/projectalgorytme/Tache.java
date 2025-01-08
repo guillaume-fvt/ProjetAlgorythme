@@ -120,7 +120,7 @@ public class Tache {
     }
     @Override
     public String toString() {
-        return "Tache [id=" + id + ", nom=" + nom + ", priorite=" + priorite + dateLimite + categorie + statut + description + commentaires + "]";
+        return "Tache [id=" + id + ", nom=" + nom + ", priorite=" + priorite + ", date limite = " + dateLimite + ", categorie = "+ categorie + ", statut = " +statut + ", description = " + description + ", commentaires = " + commentaires + "]";
     }
 }
 

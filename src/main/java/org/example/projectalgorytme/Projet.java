@@ -121,7 +121,7 @@ public class Projet {
 
     @Override
     public String toString() {
-        return "Projet [id=" + id + ", nom=" + nom + membres+"]";
+        return "Projet [id=" + id + ", nom=" + nom + ", date de debut = " + dateDebut + ", date de fin = " + dateFin + ", membres = " + membres+"]";
     }
     static class MembreProjet {
         private int employeId;
