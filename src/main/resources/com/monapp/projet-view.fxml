@@ -9,7 +9,6 @@
 
     <children>
         <Label layoutX="14.0" layoutY="14.0" text="Gestion des Projets" />
-
         <TableView fx:id="tableProjets" layoutX="14.0" layoutY="40.0" prefWidth="572.0" prefHeight="200.0" />
 
         <TextField fx:id="tfNomProjet" layoutX="14.0" layoutY="260.0" promptText="Nom du projet" />

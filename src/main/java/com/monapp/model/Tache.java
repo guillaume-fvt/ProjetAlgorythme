@@ -25,6 +25,71 @@ public class Tache {
         this.employeAssigne = employeAssigne;
     }
 
-    // Getters, Setters, etc.
-    // ...
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public StatutTache getStatut() {
+        return statut;
+    }
+
+    public void setStatut(StatutTache statut) {
+        this.statut = statut;
+    }
+
+    public int getPriorite() {
+        return priorite;
+    }
+
+    public void setPriorite(int priorite) {
+        this.priorite = priorite;
+    }
+
+    public LocalDate getDateLimite() {
+        return dateLimite;
+    }
+
+    public void setDateLimite(LocalDate dateLimite) {
+        this.dateLimite = dateLimite;
+    }
+
+    public Employe getEmployeAssigne() {
+        return employeAssigne;
+    }
+
+    public void setEmployeAssigne(Employe employeAssigne) {
+        this.employeAssigne = employeAssigne;
+    }
+
+    @Override
+    public String toString() {
+        return "Tache{" +
+                "id=" + id +
+                ", titre='" + titre + '\'' +
+                ", statut=" + statut +
+                ", priorite=" + priorite +
+                ", dateLimite=" + dateLimite +
+                ", employeAssigne=" + (employeAssigne != null ? employeAssigne.getNom() : "Aucun") +
+                '}';
+    }
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 public class ApplicationManager {
 
-    private List<Employe> listeEmployes;
-    private List<Projet> listeProjets;
-    private List<Tache> listeTaches;
+    private final List<Employe> listeEmployes;
+    private final List<Projet> listeProjets;
+    private final List<Tache> listeTaches;
 
     public ApplicationManager() {
         listeEmployes = new ArrayList<>();
@@ -19,12 +19,15 @@ public class ApplicationManager {
     public void ajouterEmploye(Employe e) {
         listeEmployes.add(e);
     }
+
     public void modifierEmploye(Employe e) {
-        // ...
+        // Logique de mise à jour (selon ton besoin)
     }
+
     public void supprimerEmploye(int id) {
         listeEmployes.removeIf(emp -> emp.getId() == id);
     }
+
     public List<Employe> getListeEmployes() {
         return listeEmployes;
     }
@@ -33,12 +36,15 @@ public class ApplicationManager {
     public void ajouterProjet(Projet p) {
         listeProjets.add(p);
     }
+
     public void modifierProjet(Projet p) {
         // ...
     }
+
     public void supprimerProjet(int id) {
         listeProjets.removeIf(prj -> prj.getId() == id);
     }
+
     public List<Projet> getListeProjets() {
         return listeProjets;
     }
@@ -47,12 +53,15 @@ public class ApplicationManager {
     public void ajouterTache(Tache t) {
         listeTaches.add(t);
     }
+
     public void modifierTache(Tache t) {
         // ...
     }
+
     public void supprimerTache(int id) {
         listeTaches.removeIf(tache -> tache.getId() == id);
     }
+
     public List<Tache> getListeTaches() {
         return listeTaches;
     }
@@ -61,6 +70,7 @@ public class ApplicationManager {
     public void sauvegarderDonnees() {
         // ...
     }
+
     public void chargerDonnees() {
         // ...
     }

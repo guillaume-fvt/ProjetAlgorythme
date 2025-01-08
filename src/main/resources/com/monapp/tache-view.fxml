@@ -10,10 +10,8 @@
     <children>
         <Label layoutX="14.0" layoutY="14.0" text="Gestion des Tâches" />
 
-        <!-- TableView pour afficher les tâches -->
         <TableView fx:id="tableTaches" layoutX="14.0" layoutY="40.0" prefWidth="572.0" prefHeight="200.0" />
 
-        <!-- Champs pour créer/modifier une tâche -->
         <TextField fx:id="tfTitre" layoutX="14.0" layoutY="260.0" promptText="Titre" />
         <TextArea fx:id="taDescription" layoutX="14.0" layoutY="300.0" prefWidth="200.0" prefHeight="80.0" promptText="Description" />
         <ComboBox fx:id="cbStatut" layoutX="240.0" layoutY="260.0" />

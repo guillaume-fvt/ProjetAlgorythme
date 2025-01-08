@@ -3,7 +3,6 @@ package com.monapp.controller;
 import com.monapp.model.ApplicationManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
@@ -13,7 +12,8 @@ public class MainController {
 
     private ApplicationManager applicationManager;
 
-    // Tu peux aussi injecter un MenuBar ou d'autres éléments du FXML si nécessaire
+    @FXML
+    private BorderPane mainBorderPane; // injection depuis le FXML (fx:id="mainBorderPane")
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
@@ -21,7 +21,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Appelé après chargement du FXML
+        // Appelé après que main-view.fxml est chargé
     }
 
     @FXML
@@ -39,14 +39,12 @@ public class MainController {
         chargerVue("/com/monapp/tache-view.fxml");
     }
 
-    @FXML
-    private BorderPane mainBorderPane;
-
     private void chargerVue(String cheminFXML) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(cheminFXML));
             AnchorPane vue = loader.load();
 
+            // Récupérer le contrôleur de la vue chargée
             Object controller = loader.getController();
             if (controller instanceof EmployeController) {
                 ((EmployeController) controller).setApplicationManager(this.applicationManager);
@@ -56,11 +54,11 @@ public class MainController {
                 ((TacheController) controller).setApplicationManager(this.applicationManager);
             }
 
+            // On place la vue (AnchorPane) au centre du BorderPane principal
             mainBorderPane.setCenter(vue);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 }

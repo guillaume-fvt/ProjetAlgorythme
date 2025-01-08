@@ -27,7 +27,7 @@ public class EmployeController {
 
     @FXML
     public void initialize() {
-        // initialisation du TableView, liaison des colonnes (PropertyValueFactory, etc.)
+        // Si tu utilises PropertyValueFactory, importe javafx.scene.control.cell.PropertyValueFactory
         // colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         // colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         // colRole.setCellValueFactory(new PropertyValueFactory<>("role"));

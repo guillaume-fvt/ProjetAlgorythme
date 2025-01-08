@@ -12,7 +12,6 @@ public class TacheController {
 
     @FXML
     private TableView<Tache> tableTaches;
-
     @FXML
     private TextField tfTitre, tfPriorite;
     @FXML
@@ -28,6 +27,7 @@ public class TacheController {
 
     @FXML
     public void initialize() {
+        // Charger les valeurs de l'enum dans la ComboBox
         cbStatut.getItems().setAll(StatutTache.values());
         rafraichirTable();
     }
@@ -41,7 +41,7 @@ public class TacheController {
                 cbStatut.getValue(),
                 Integer.parseInt(tfPriorite.getText()),
                 dpDateLimite.getValue(),
-                null
+                null  // pas d'employé assigné pour l'instant
         );
         applicationManager.ajouterTache(t);
         rafraichirTable();
