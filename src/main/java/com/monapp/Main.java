@@ -15,15 +15,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            // Créer le manager (logique métier) et charger éventuellement des données
             applicationManager = new ApplicationManager();
-            // applicationManager.chargerDonnees(); // si tu as implémenté la persistance
+            // applicationManager.chargerDonnees(); // si tu veux charger un fichier plus tard
 
-            // Charger le FXML principal
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/main-view.fxml"));
             BorderPane root = loader.load();
 
-            // Récupérer le contrôleur et lui injecter l'ApplicationManager
             MainController mainController = loader.getController();
             mainController.setApplicationManager(applicationManager);
 

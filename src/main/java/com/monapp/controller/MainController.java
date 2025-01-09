@@ -3,8 +3,11 @@ package com.monapp.controller;
 import com.monapp.model.ApplicationManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
@@ -13,7 +16,7 @@ public class MainController {
     private ApplicationManager applicationManager;
 
     @FXML
-    private BorderPane mainBorderPane; // injection depuis le FXML (fx:id="mainBorderPane")
+    private BorderPane mainBorderPane;
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
@@ -21,31 +24,36 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Appelé après que main-view.fxml est chargé
+        // Rien de spécial ici
     }
 
     @FXML
     public void handleMenuEmployes() {
-        chargerVue("/com/monapp/employe-view.fxml");
+        ouvrirNouvelleFenetre("/com/monapp/employe-view.fxml", "Gestion des Employés");
     }
 
     @FXML
     public void handleMenuProjets() {
-        chargerVue("/com/monapp/projet-view.fxml");
+        ouvrirNouvelleFenetre("/com/monapp/projet-view.fxml", "Gestion des Projets");
     }
 
     @FXML
     public void handleMenuTaches() {
-        chargerVue("/com/monapp/tache-view.fxml");
+        ouvrirNouvelleFenetre("/com/monapp/tache-view.fxml", "Gestion des Tâches");
     }
 
-    private void chargerVue(String cheminFXML) {
+    /**
+     * Ouvre une nouvelle fenêtre (Stage) avec le FXML indiqué.
+     * Injecte l'applicationManager dans le contrôleur avant d'afficher la fenêtre.
+     */
+    private void ouvrirNouvelleFenetre(String cheminFXML, String titreFenetre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(cheminFXML));
-            AnchorPane vue = loader.load();
+            AnchorPane root = loader.load();
 
-            // Récupérer le contrôleur de la vue chargée
+            // Récupérer le contrôleur
             Object controller = loader.getController();
+            // Injecter l'applicationManager + rafraîchir la table
             if (controller instanceof EmployeController) {
                 ((EmployeController) controller).setApplicationManager(this.applicationManager);
             } else if (controller instanceof ProjetController) {
@@ -54,8 +62,15 @@ public class MainController {
                 ((TacheController) controller).setApplicationManager(this.applicationManager);
             }
 
-            // On place la vue (AnchorPane) au centre du BorderPane principal
-            mainBorderPane.setCenter(vue);
+            // Créer la fenêtre
+            Stage fenetre = new Stage();
+            fenetre.setTitle(titreFenetre);
+            fenetre.initModality(Modality.WINDOW_MODAL);
+            fenetre.initOwner(mainBorderPane.getScene().getWindow());
+
+            Scene scene = new Scene(root);
+            fenetre.setScene(scene);
+            fenetre.show();
 
         } catch (IOException e) {
             e.printStackTrace();

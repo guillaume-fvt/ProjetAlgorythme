@@ -21,14 +21,17 @@ public class TacheController {
     @FXML
     private DatePicker dpDateLimite;
 
-    public void setApplicationManager(ApplicationManager manager) {
-        this.applicationManager = manager;
-    }
+    @FXML
+    private Button btnKanban, btnCalendrier;
 
     @FXML
     public void initialize() {
-        // Charger les valeurs de l'enum dans la ComboBox
+        // Configure if you have any TableColumn here
         cbStatut.getItems().setAll(StatutTache.values());
+    }
+
+    public void setApplicationManager(ApplicationManager manager) {
+        this.applicationManager = manager;
         rafraichirTable();
     }
 
@@ -41,7 +44,7 @@ public class TacheController {
                 cbStatut.getValue(),
                 Integer.parseInt(tfPriorite.getText()),
                 dpDateLimite.getValue(),
-                null  // pas d'employé assigné pour l'instant
+                null
         );
         applicationManager.ajouterTache(t);
         rafraichirTable();
@@ -68,6 +71,30 @@ public class TacheController {
             applicationManager.supprimerTache(selected.getId());
             rafraichirTable();
         }
+    }
+
+    /**
+     * Vue Kanban (3 colonnes) - à implémenter
+     */
+    @FXML
+    public void ouvrirKanban() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Vue Kanban");
+        alert.setHeaderText("Kanban (À faire / En cours / Terminé)");
+        alert.setContentText("Ici, tu peux implémenter un Drag & Drop pour déplacer les Tâches.");
+        alert.showAndWait();
+    }
+
+    /**
+     * Vue Calendrier - à implémenter
+     */
+    @FXML
+    public void ouvrirCalendrier() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Calendrier");
+        alert.setHeaderText("Visualisation des échéances");
+        alert.setContentText("Ici, tu peux afficher un calendrier pour les dates-limite des Tâches.");
+        alert.showAndWait();
     }
 
     private void rafraichirTable() {
