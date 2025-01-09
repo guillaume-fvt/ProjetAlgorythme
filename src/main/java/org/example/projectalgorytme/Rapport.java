@@ -67,7 +67,5 @@ public class Rapport {
             System.out.println("Erreur lors de la génération du rapport de budget : " + e.getMessage());
         }
     }
-
-
 }
 

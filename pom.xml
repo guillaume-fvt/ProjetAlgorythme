@@ -39,7 +39,12 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    <repositories>
+        <repository>
+            <id>itext-repo</id>
+            <url>https://repo.itextpdf.com/maven2/</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
