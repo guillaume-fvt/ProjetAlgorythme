@@ -43,22 +43,51 @@ public class TacheController {
 
     @FXML
     public void initialize() {
-        // Paramétrer les colonnes
+        // Configurer les colonnes
         colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
         colStatut.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatut().name()));
-
         colDateLimite.setCellValueFactory(c -> {
             Tache t = c.getValue();
             if (t.getDateLimite() == null) return new SimpleStringProperty("");
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             return new SimpleStringProperty(t.getDateLimite().format(fmt));
         });
-
         colPrioritaire.setCellValueFactory(c -> {
             Tache t = c.getValue();
             String prior = (t.getPriorite() > 0) ? "Oui" : "Non";
             return new SimpleStringProperty(prior);
         });
+
+        // Listener pour afficher les détails d'une tâche sélectionnée
+        tableTaches.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                afficherTache(newSelection);
+            }
+        });
+
+        // Listener pour les clic multiples
+        tableTaches.setOnMouseClicked(event -> {
+            Tache selected = tableTaches.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                afficherTache(selected); // Remet à jour les champs à chaque clic
+            }
+        });
+    }
+
+    private void viderChamps() {
+        tfTitre.clear(); // Vider le champ du titre
+        taDescription.clear(); // Vider le champ de description
+        cbStatut.setValue(null); // Réinitialiser le ComboBox
+        dpDateLimite.setValue(null); // Réinitialiser le DatePicker
+        cbPrioritaire.setSelected(false); // Décocher la case à cocher
+    }
+
+    private void afficherTache(Tache tache) {
+        tfTitre.setText(tache.getTitre());
+        taDescription.setText(tache.getDescription());
+        cbStatut.setValue(tache.getStatut());
+        dpDateLimite.setValue(tache.getDateLimite());
+        cbPrioritaire.setSelected(tache.getPriorite() > 0);
     }
 
     public void setApplicationManager(ApplicationManager manager) {
@@ -81,6 +110,7 @@ public class TacheController {
         );
         applicationManager.ajouterTache(t);
         rafraichirTable();
+        viderChamps();
     }
 
     @FXML
@@ -94,6 +124,7 @@ public class TacheController {
             selected.setDateLimite(dpDateLimite.getValue());
             applicationManager.modifierTache(selected);
             rafraichirTable();
+            viderChamps();
         }
     }
 
@@ -103,6 +134,7 @@ public class TacheController {
         if (selected != null) {
             applicationManager.supprimerTache(selected.getId());
             rafraichirTable();
+            viderChamps();
         }
     }
 

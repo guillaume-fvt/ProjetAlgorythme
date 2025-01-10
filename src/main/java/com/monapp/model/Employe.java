@@ -47,7 +47,6 @@ public class Employe {
     public void setRole(String role) {
         this.role = role;
     }
-
     @Override
     public String toString() {
         return "Employe{" +
@@ -55,6 +54,6 @@ public class Employe {
                 ", nom='" + nom + '\'' +
                 ", prenom='" + prenom + '\'' +
                 ", role='" + role + '\'' +
-                '}';
+        '}';
     }
 }

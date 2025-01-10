@@ -27,14 +27,43 @@ public class EmployeController {
 
     @FXML
     public void initialize() {
+        // Configurer les colonnes de la TableView
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colPrenom.setCellValueFactory(new PropertyValueFactory<>("prenom"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
+
+        // Ajouter un listener pour détecter la sélection dans la table
+        tableEmployes.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                afficherEmploye(newSelection);
+            }
+        });
+
+        // Ajouter un listener pour les clics répétés
+        tableEmployes.setOnMouseClicked(event -> {
+            Employe selected = tableEmployes.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                afficherEmploye(selected); // Remet à jour les champs à chaque clic
+            }
+        });
     }
+
 
     public void setApplicationManager(ApplicationManager manager) {
         this.applicationManager = manager;
         rafraichirTable();
+    }
+
+    private void viderChamps() {
+        tfNom.clear();      // Vider le champ du nom
+        tfPrenom.clear();   // Vider le champ du prénom
+        tfRole.clear();     // Vider le champ du rôle
+    }
+
+    private void afficherEmploye(Employe employe) {
+        tfNom.setText(employe.getNom());
+        tfPrenom.setText(employe.getPrenom());
+        tfRole.setText(employe.getRole());
     }
 
     @FXML
@@ -47,6 +76,7 @@ public class EmployeController {
         );
         applicationManager.ajouterEmploye(e);
         rafraichirTable();
+        viderChamps();
     }
 
     @FXML
@@ -58,6 +88,14 @@ public class EmployeController {
             selected.setRole(tfRole.getText());
             applicationManager.modifierEmploye(selected);
             rafraichirTable();
+            viderChamps();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun employé sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un employé dans la table pour le modifier.");
+            alert.showAndWait();
         }
     }
 
@@ -67,6 +105,14 @@ public class EmployeController {
         if (selected != null) {
             applicationManager.supprimerEmploye(selected.getId());
             rafraichirTable();
+            viderChamps();
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun employé sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un employé dans la table pour le supprimer.");
+            alert.showAndWait();
         }
     }
 

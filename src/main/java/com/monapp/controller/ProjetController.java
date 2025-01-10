@@ -55,6 +55,8 @@ public class ProjetController {
             if (newSelection != null) {
                 afficherProjet(newSelection);
             }
+            else
+                viderChamps();
         });
 
         // Ajouter un listener pour gérer les clics répétés
@@ -63,6 +65,8 @@ public class ProjetController {
             if (selected != null) {
                 afficherProjet(selected);
             }
+            else
+                viderChamps();
         });
     }
 
