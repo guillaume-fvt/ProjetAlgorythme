@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -14,9 +13,9 @@
         <TableView fx:id="tableEmployes" layoutX="14.0" layoutY="40.0"
                    prefWidth="572.0" prefHeight="200.0">
             <columns>
-                <TableColumn fx:id="colNom" text="Nom" prefWidth="180.0" />
-                <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="180.0" />
-                <TableColumn fx:id="colRole" text="Rôle" prefWidth="180.0" />
+                <TableColumn fx:id="colNom"     text="Nom"     prefWidth="180.0" />
+                <TableColumn fx:id="colPrenom" text="Prénom"  prefWidth="180.0" />
+                <TableColumn fx:id="colRole"   text="Rôle"    prefWidth="180.0" />
             </columns>
         </TableView>
 
@@ -28,10 +27,9 @@
         <Button layoutX="250.0" layoutY="300.0" text="Modifier"  onAction="#modifierEmploye"/>
         <Button layoutX="250.0" layoutY="340.0" text="Supprimer" onAction="#supprimerEmploye"/>
 
-        <!-- Nouveaux boutons -->
-        <Button fx:id="btnAfficherInfos"      layoutX="420.0" layoutY="260.0"
-                text="Afficher Infos"         onAction="#afficherInfosEmploye" />
-        <Button fx:id="btnAfficherHistorique" layoutX="420.0" layoutY="300.0"
-                text="Historique Projets"     onAction="#afficherHistoriqueEmploye" />
+        <Button layoutX="420.0" layoutY="260.0" text="Afficher Infos"
+                onAction="#afficherInfosEmploye"/>
+        <Button layoutX="420.0" layoutY="300.0" text="Historique Projets"
+                onAction="#afficherHistoriqueEmploye"/>
     </children>
 </AnchorPane>

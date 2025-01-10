@@ -21,10 +21,7 @@
         <Button layoutX="250.0" layoutY="300.0" text="Modifier"  onAction="#modifierProjet" />
         <Button layoutX="250.0" layoutY="340.0" text="Supprimer" onAction="#supprimerProjet" />
 
-        <!-- Nouveaux boutons -->
-        <Button fx:id="btnComposerTaches" layoutX="420.0" layoutY="260.0"
-                text="Composer Tâches" onAction="#composerTaches" />
-        <Button fx:id="btnPlacerMembres" layoutX="420.0" layoutY="300.0"
-                text="Placer Membres" onAction="#placerMembres" />
+        <Button layoutX="420.0" layoutY="260.0" text="Composer Tâches" onAction="#composerTaches" />
+        <Button layoutX="420.0" layoutY="300.0" text="Placer Membres"  onAction="#placerMembres" />
     </children>
 </AnchorPane>

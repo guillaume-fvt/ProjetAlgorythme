@@ -24,7 +24,7 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Rien de spécial ici
+        // Rien ici
     }
 
     @FXML
@@ -42,18 +42,12 @@ public class MainController {
         ouvrirNouvelleFenetre("/com/monapp/tache-view.fxml", "Gestion des Tâches");
     }
 
-    /**
-     * Ouvre une nouvelle fenêtre (Stage) avec le FXML indiqué.
-     * Injecte l'applicationManager dans le contrôleur avant d'afficher la fenêtre.
-     */
     private void ouvrirNouvelleFenetre(String cheminFXML, String titreFenetre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(cheminFXML));
             AnchorPane root = loader.load();
 
-            // Récupérer le contrôleur
             Object controller = loader.getController();
-            // Injecter l'applicationManager + rafraîchir la table
             if (controller instanceof EmployeController) {
                 ((EmployeController) controller).setApplicationManager(this.applicationManager);
             } else if (controller instanceof ProjetController) {
@@ -62,7 +56,6 @@ public class MainController {
                 ((TacheController) controller).setApplicationManager(this.applicationManager);
             }
 
-            // Créer la fenêtre
             Stage fenetre = new Stage();
             fenetre.setTitle(titreFenetre);
             fenetre.initModality(Modality.WINDOW_MODAL);

@@ -3,7 +3,14 @@ package com.monapp.controller;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import java.io.IOException;
 
 public class ProjetController {
 
@@ -12,22 +19,22 @@ public class ProjetController {
     @FXML
     private TableView<Projet> tableProjets;
     @FXML
+    private TableColumn<Projet, String> colNomProjet; // si besoin
+    // ... tu peux ajouter colDateDebut, colDateFin ?
+
+    @FXML
     private TextField tfNomProjet;
     @FXML
     private DatePicker dpDateDebut, dpDateFin;
 
-    @FXML
-    private Button btnComposerTaches, btnPlacerMembres;
-
-    // Au lieu d'initialize() pour refresh, on y met seulement la config de colonnes
-    @FXML
-    public void initialize() {
-        // si tu as des TableColumn<Projet, ...> tu peux les lier ici
-    }
-
     public void setApplicationManager(ApplicationManager manager) {
         this.applicationManager = manager;
         rafraichirTable();
+    }
+
+    @FXML
+    public void initialize() {
+        // On pourrait lier des colonnes : colNomProjet.setCellValueFactory(...)
     }
 
     @FXML
@@ -63,38 +70,49 @@ public class ProjetController {
         }
     }
 
-    /**
-     * Composer un projet en un ensemble de tâches (ex: ouvre un pop-up,
-     * ou liste des Taches qu'on peut associer)
-     */
     @FXML
     public void composerTaches() {
         Projet selected = tableProjets.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Composer un Projet");
-            alert.setHeaderText("Tâches du projet : " + selected.getNom());
-            alert.setContentText("Ici, tu pourrais afficher/ajouter/supprimer des Taches " +
-                    "dans selected.getListeTaches().");
-            alert.showAndWait();
-        }
+        if (selected == null) return;
+
+        // Ouvre un Alert ou un second FXML
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Composer Tâches");
+        alert.setHeaderText("Tâches du projet : " + selected.getNom());
+        StringBuilder sb = new StringBuilder();
+        sb.append("Tâches existantes dans ce projet : \n");
+        selected.getListeTaches().forEach(t ->
+                sb.append(" - ").append(t.getTitre()).append(" (").append(t.getStatut()).append(")\n")
+        );
+        sb.append("\n(À implémenter : Ajouter / Retirer des Tâches)");
+        alert.setContentText(sb.toString());
+        alert.showAndWait();
     }
 
-    /**
-     * Placer des membres depuis la liste du personnel
-     */
     @FXML
     public void placerMembres() {
         Projet selected = tableProjets.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            // Par exemple, lister tous les Employe de applicationManager.getListeEmployes()
-            // Choisir ceux à ajouter dans selected.ajouterEmploye(e)
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Placer des Membres");
-            alert.setHeaderText("Membres du projet : " + selected.getNom());
-            alert.setContentText("Ici, tu pourrais afficher la liste des employés " +
-                    "et attribuer un 'rôle' au sein du projet.");
-            alert.showAndWait();
+        if (selected == null) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/membres-projet-view.fxml"));
+            AnchorPane root = loader.load();
+
+            MembresProjetController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setProjet(selected); // pour savoir sur quel projet ajouter
+
+            Stage stage = new Stage();
+            stage.setTitle("Placer Membres sur le projet : " + selected.getNom());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            // Après fermeture, on rafraîchit la table
+            rafraichirTable();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

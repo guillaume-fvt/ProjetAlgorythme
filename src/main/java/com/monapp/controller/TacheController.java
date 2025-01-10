@@ -13,36 +13,38 @@ public class TacheController {
     @FXML
     private TableView<Tache> tableTaches;
     @FXML
-    private TextField tfTitre, tfPriorite;
+    private TextField tfTitre;
     @FXML
     private TextArea taDescription;
     @FXML
     private ComboBox<StatutTache> cbStatut;
     @FXML
     private DatePicker dpDateLimite;
-
     @FXML
-    private Button btnKanban, btnCalendrier;
-
-    @FXML
-    public void initialize() {
-        // Configure if you have any TableColumn here
-        cbStatut.getItems().setAll(StatutTache.values());
-    }
+    private CheckBox cbPrioritaire; // au lieu d'un TextField
 
     public void setApplicationManager(ApplicationManager manager) {
         this.applicationManager = manager;
+        cbStatut.getItems().setAll(StatutTache.values());
         rafraichirTable();
     }
 
     @FXML
+    public void initialize() {
+        // On ne fait pas de rafraîchissement ici
+    }
+
+    @FXML
     public void ajouterTache() {
+        // Si la CheckBox est cochée => priorite = 1, sinon 0
+        int priorite = cbPrioritaire.isSelected() ? 1 : 0;
+
         Tache t = new Tache(
                 applicationManager.getListeTaches().size() + 1,
                 tfTitre.getText(),
                 taDescription.getText(),
                 cbStatut.getValue(),
-                Integer.parseInt(tfPriorite.getText()),
+                priorite,
                 dpDateLimite.getValue(),
                 null
         );
@@ -57,7 +59,7 @@ public class TacheController {
             selected.setTitre(tfTitre.getText());
             selected.setDescription(taDescription.getText());
             selected.setStatut(cbStatut.getValue());
-            selected.setPriorite(Integer.parseInt(tfPriorite.getText()));
+            selected.setPriorite(cbPrioritaire.isSelected() ? 1 : 0);
             selected.setDateLimite(dpDateLimite.getValue());
             applicationManager.modifierTache(selected);
             rafraichirTable();
@@ -73,28 +75,16 @@ public class TacheController {
         }
     }
 
-    /**
-     * Vue Kanban (3 colonnes) - à implémenter
-     */
     @FXML
     public void ouvrirKanban() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Vue Kanban");
-        alert.setHeaderText("Kanban (À faire / En cours / Terminé)");
-        alert.setContentText("Ici, tu peux implémenter un Drag & Drop pour déplacer les Tâches.");
-        alert.showAndWait();
+        // On ouvre une nouvelle fenêtre "kanban-view.fxml"
+        KanbanController.ouvrirKanbanScene(applicationManager, tableTaches.getScene().getWindow());
     }
 
-    /**
-     * Vue Calendrier - à implémenter
-     */
     @FXML
     public void ouvrirCalendrier() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Calendrier");
-        alert.setHeaderText("Visualisation des échéances");
-        alert.setContentText("Ici, tu peux afficher un calendrier pour les dates-limite des Tâches.");
-        alert.showAndWait();
+        // On ouvre une nouvelle fenêtre "calendar-view.fxml"
+        CalendarController.ouvrirCalendarScene(applicationManager, tableTaches.getScene().getWindow());
     }
 
     private void rafraichirTable() {

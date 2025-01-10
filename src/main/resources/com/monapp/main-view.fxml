@@ -20,5 +20,5 @@
         </MenuBar>
     </top>
 
-    <!-- La zone center sera mise à jour dynamiquement via mainBorderPane.setCenter(...) -->
+    <!-- centre vide -->
 </BorderPane>

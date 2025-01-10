@@ -16,7 +16,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         try {
             applicationManager = new ApplicationManager();
-            // applicationManager.chargerDonnees(); // si tu veux charger un fichier plus tard
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/main-view.fxml"));
             BorderPane root = loader.load();
