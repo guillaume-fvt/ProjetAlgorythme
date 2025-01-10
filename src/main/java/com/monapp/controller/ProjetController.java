@@ -40,16 +40,43 @@ public class ProjetController {
 
     @FXML
     public void initialize() {
+        // Configurer les colonnes de la TableView
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colDates.setCellValueFactory(cellData -> {
             Projet p = cellData.getValue();
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             String debut = (p.getDateDebut() != null) ? p.getDateDebut().format(fmt) : "??";
-            String fin   = (p.getDateFin()   != null) ? p.getDateFin().format(fmt)   : "??";
+            String fin = (p.getDateFin() != null) ? p.getDateFin().format(fmt) : "??";
             return new javafx.beans.property.SimpleStringProperty(debut + " -> " + fin);
+        });
+
+        // Listener pour mettre à jour les champs
+        tableProjets.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                afficherProjet(newSelection);
+            }
+        });
+
+        // Ajouter un listener pour gérer les clics répétés
+        tableProjets.setOnMouseClicked(event -> {
+            Projet selected = tableProjets.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                afficherProjet(selected);
+            }
         });
     }
 
+    private void viderChamps() {
+        tfNomProjet.clear();
+        dpDateDebut.setValue(null);
+        dpDateFin.setValue(null);
+    }
+
+    private void afficherProjet(Projet projet) {
+        tfNomProjet.setText(projet.getNom());
+        dpDateDebut.setValue(projet.getDateDebut());
+        dpDateFin.setValue(projet.getDateFin());
+    }
     @FXML
     public void ajouterProjet() {
         Projet p = new Projet(
@@ -60,6 +87,7 @@ public class ProjetController {
         );
         applicationManager.ajouterProjet(p);
         rafraichirTable();
+        viderChamps();
     }
 
     @FXML
@@ -71,6 +99,13 @@ public class ProjetController {
             selected.setDateFin(dpDateFin.getValue());
             applicationManager.modifierProjet(selected);
             rafraichirTable();
+            viderChamps();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table pour le modifier.");
+            alert.showAndWait();
         }
     }
 
@@ -80,6 +115,13 @@ public class ProjetController {
         if (selected != null) {
             applicationManager.supprimerProjet(selected.getId());
             rafraichirTable();
+            viderChamps();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table pour le supprimer.");
+            alert.showAndWait();
         }
     }
 
