@@ -9,6 +9,7 @@ public class Projet {
     private String nom;
     private LocalDate dateDebut;
     private LocalDate dateFin;
+    private int palierPrecedent;
     private List<Tache> listeTaches = new ArrayList<>();
     private List<Employe> membres = new ArrayList<>();
 
@@ -19,6 +20,7 @@ public class Projet {
         this.nom = nom;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
+        this.palierPrecedent = 0;
     }
 
     // Getters / Setters
@@ -51,6 +53,13 @@ public class Projet {
         if (!membres.contains(e)) {
             membres.add(e);
         }
+    }
+    public int getPalierPrecedent() {
+        return palierPrecedent;
+    }
+
+    public void setPalierPrecedent(int palierPrecedent) {
+        this.palierPrecedent = palierPrecedent;
     }
     public void retirerEmploye(Employe e) {
         membres.remove(e);

@@ -50,6 +50,8 @@ public class ProjetController {
             return new javafx.beans.property.SimpleStringProperty(debut + " -> " + fin);
         });
 
+        verifierNotifications();
+
         // Listener pour mettre à jour les champs
         tableProjets.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -190,10 +192,21 @@ public class ProjetController {
             stage.setTitle("Associer des Tâches à " + selectedProjet.getNom());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(new Scene(root, 600, 400));
-            stage.showAndWait();
 
-            // Rafraîchir la table des projets après fermeture de la fenêtre
-            rafraichirTable();
+            // Ajouter un listener pour détecter lorsqu'une tâche est ajoutée
+            controller.setOnTaskAddedListener(() -> {
+                Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+                confirmationAlert.setTitle("Tâche ajoutée");
+                confirmationAlert.setHeaderText(null);
+                confirmationAlert.setContentText("Une tâche a été ajoutée avec succès au projet \"" + selectedProjet.getNom() + "\".");
+                confirmationAlert.showAndWait();
+
+                // Rafraîchir la table des projets
+                rafraichirTable();
+            });
+
+            // Afficher la fenêtre (ne pas fermer automatiquement après ajout)
+            stage.show();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -256,5 +269,70 @@ public class ProjetController {
             }
         }
     }
-}
+    @FXML
+    public void verifierNotifications() {
+        StringBuilder message = new StringBuilder();
 
+        for (Projet projet : tableProjets.getItems()) {
+            // Calculer les tâches terminées et le total
+            long tachesTerminees = projet.getListeTaches().stream()
+                    .filter(tache -> tache.getStatut() == StatutTache.TERMINE)
+                    .count();
+            long totalTaches = projet.getListeTaches().size();
+            double tauxAvancement = (totalTaches > 0) ? ((double) tachesTerminees / totalTaches) * 100 : 0;
+
+            // 1. Tâches retardées
+            long tachesRetardees = projet.getListeTaches().stream()
+                    .filter(tache -> tache.getDateLimite() != null &&
+                            tache.getDateLimite().isBefore(java.time.LocalDate.now()) &&
+                            tache.getStatut() != StatutTache.TERMINE)
+                    .count();
+            if (tachesRetardees > 0) {
+                message.append("⚠ Projet \"").append(projet.getNom())
+                        .append("\" a ").append(tachesRetardees)
+                        .append(" tâche(s) en retard.\n");
+            }
+
+            // 2. Projet approchant de son échéance
+            if (projet.getDateFin() != null &&
+                    projet.getDateFin().isBefore(java.time.LocalDate.now().plusDays(7)) &&
+                    projet.getDateFin().isAfter(java.time.LocalDate.now())) {
+                message.append("⏳ Projet \"").append(projet.getNom())
+                        .append("\" approche de son échéance (Date fin : ")
+                        .append(projet.getDateFin()).append(").\n");
+            }
+
+            // 3. Projet terminé
+            if (tachesTerminees == totalTaches && totalTaches > 0) {
+                message.append("✅ Projet \"").append(projet.getNom())
+                        .append("\" est terminé ! Félicitations !\n");
+                continue; // Pas besoin de vérifier les paliers pour un projet terminé
+            }
+
+            // 4. Avancement par paliers
+            int palierActuel = (int) (tauxAvancement / 25) * 25;
+            int palierPrecedent = projet.getPalierPrecedent(); // Variable stockée dans Projet
+            if (palierActuel > palierPrecedent) {
+                message.append("📈 Projet \"").append(projet.getNom())
+                        .append("\" a atteint ").append(palierActuel).append("% d'avancement.\n");
+                projet.setPalierPrecedent(palierActuel); // Met à jour le palier atteint
+            }
+        }
+
+        // Afficher une alerte si des notifications existent
+        if (message.length() > 0) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Notifications sur les Projets");
+            alert.setHeaderText("Détails des Projets");
+            alert.setContentText(message.toString());
+            alert.showAndWait();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Aucune Notification");
+            alert.setHeaderText(null);
+            alert.setContentText("Aucune notification pour les projets.");
+            alert.showAndWait();
+        }
+    }
+
+}
