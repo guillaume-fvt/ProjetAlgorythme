@@ -3,8 +3,12 @@ package com.monapp.controller;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.StatutTache;
 import com.monapp.model.Tache;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+import java.time.format.DateTimeFormatter;
 
 public class TacheController {
 
@@ -12,6 +16,15 @@ public class TacheController {
 
     @FXML
     private TableView<Tache> tableTaches;
+    @FXML
+    private TableColumn<Tache, String> colTitre;
+    @FXML
+    private TableColumn<Tache, String> colStatut;
+    @FXML
+    private TableColumn<Tache, String> colDateLimite;
+    @FXML
+    private TableColumn<Tache, String> colPrioritaire;
+
     @FXML
     private TextField tfTitre;
     @FXML
@@ -21,7 +34,27 @@ public class TacheController {
     @FXML
     private DatePicker dpDateLimite;
     @FXML
-    private CheckBox cbPrioritaire; // au lieu d'un TextField
+    private CheckBox cbPrioritaire;
+
+    @FXML
+    public void initialize() {
+        // Paramétrer les colonnes
+        colTitre.setCellValueFactory(new PropertyValueFactory<>("titre"));
+        colStatut.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatut().name()));
+
+        colDateLimite.setCellValueFactory(c -> {
+            Tache t = c.getValue();
+            if (t.getDateLimite() == null) return new SimpleStringProperty("");
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            return new SimpleStringProperty(t.getDateLimite().format(fmt));
+        });
+
+        colPrioritaire.setCellValueFactory(c -> {
+            Tache t = c.getValue();
+            String prior = (t.getPriorite() > 0) ? "Oui" : "Non";
+            return new SimpleStringProperty(prior);
+        });
+    }
 
     public void setApplicationManager(ApplicationManager manager) {
         this.applicationManager = manager;
@@ -30,15 +63,8 @@ public class TacheController {
     }
 
     @FXML
-    public void initialize() {
-        // On ne fait pas de rafraîchissement ici
-    }
-
-    @FXML
     public void ajouterTache() {
-        // Si la CheckBox est cochée => priorite = 1, sinon 0
         int priorite = cbPrioritaire.isSelected() ? 1 : 0;
-
         Tache t = new Tache(
                 applicationManager.getListeTaches().size() + 1,
                 tfTitre.getText(),
@@ -77,17 +103,17 @@ public class TacheController {
 
     @FXML
     public void ouvrirKanban() {
-        // On ouvre une nouvelle fenêtre "kanban-view.fxml"
         KanbanController.ouvrirKanbanScene(applicationManager, tableTaches.getScene().getWindow());
     }
 
     @FXML
     public void ouvrirCalendrier() {
-        // On ouvre une nouvelle fenêtre "calendar-view.fxml"
+        // Ouvre la vue calendrier
         CalendarController.ouvrirCalendarScene(applicationManager, tableTaches.getScene().getWindow());
     }
 
     private void rafraichirTable() {
         tableTaches.getItems().setAll(applicationManager.getListeTaches());
+        tableTaches.refresh();
     }
 }

@@ -10,17 +10,16 @@ import javafx.scene.control.ListView;
 public class MembresProjetController {
 
     private ApplicationManager applicationManager;
-    private Projet projet; // le projet sur lequel on ajoute des membres
+    private Projet projet;
 
     @FXML
     private ListView<Employe> listViewEmployes;
-
     @FXML
     private Button btnAjouterMembre, btnFermer;
 
     public void setApplicationManager(ApplicationManager am) {
         this.applicationManager = am;
-        // Remplir la liste avec tous les employés disponibles
+        // On remplit la liste par tous les employés existants
         listViewEmployes.getItems().setAll(applicationManager.getListeEmployes());
     }
 
@@ -38,7 +37,6 @@ public class MembresProjetController {
 
     @FXML
     public void fermerFenetre() {
-        // On ferme la fenêtre
         btnFermer.getScene().getWindow().hide();
     }
 }

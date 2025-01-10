@@ -12,8 +12,7 @@ public class Projet {
     private List<Tache> listeTaches = new ArrayList<>();
     private List<Employe> membres = new ArrayList<>();
 
-    public Projet() {
-    }
+    public Projet() {}
 
     public Projet(int id, String nom, LocalDate dateDebut, LocalDate dateFin) {
         this.id = id;
@@ -22,6 +21,7 @@ public class Projet {
         this.dateFin = dateFin;
     }
 
+    // Getters / Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
