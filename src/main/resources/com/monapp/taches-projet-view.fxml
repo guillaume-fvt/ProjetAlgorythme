@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.monapp.controller.TachesProjetController"
+            prefWidth="500.0" prefHeight="400.0">
+
+    <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Toutes les Tâches" />
+        <ListView fx:id="listViewToutesTaches" layoutX="14.0" layoutY="40.0"
+                  prefWidth="200.0" prefHeight="300.0" />
+
+        <Label layoutX="280.0" layoutY="14.0" text="Tâches du Projet" />
+        <ListView fx:id="listViewTachesProjet" layoutX="280.0" layoutY="40.0"
+                  prefWidth="200.0" prefHeight="300.0" />
+
+        <Button fx:id="btnAjouterTache" layoutX="220.0" layoutY="80.0" text=">>"
+                onAction="#ajouterTacheAuProjet"/>
+        <Button fx:id="btnRetirerTache" layoutX="220.0" layoutY="130.0" text="<<"
+                onAction="#retirerTacheDuProjet"/>
+
+        <Button fx:id="btnFermer" layoutX="220.0" layoutY="320.0"
+                text="Fermer" onAction="#fermerFenetre"/>
+    </children>
+</AnchorPane>

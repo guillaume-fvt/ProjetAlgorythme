@@ -6,11 +6,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 public class ProjetController {
 
@@ -19,9 +21,9 @@ public class ProjetController {
     @FXML
     private TableView<Projet> tableProjets;
     @FXML
-    private TableColumn<Projet, String> colNomProjet; // si besoin
-    // ... tu peux ajouter colDateDebut, colDateFin ?
-
+    private TableColumn<Projet, String> colNom;
+    @FXML
+    private TableColumn<Projet, String> colDates;  // On va construire une property "dateDebut - dateFin"
     @FXML
     private TextField tfNomProjet;
     @FXML
@@ -34,7 +36,14 @@ public class ProjetController {
 
     @FXML
     public void initialize() {
-        // On pourrait lier des colonnes : colNomProjet.setCellValueFactory(...)
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colDates.setCellValueFactory(cellData -> {
+            Projet p = cellData.getValue();
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String debut = (p.getDateDebut() != null) ? p.getDateDebut().format(fmt) : "??";
+            String fin   = (p.getDateFin()   != null) ? p.getDateFin().format(fmt)   : "??";
+            return new javafx.beans.property.SimpleStringProperty(debut + " -> " + fin);
+        });
     }
 
     @FXML
@@ -70,25 +79,9 @@ public class ProjetController {
         }
     }
 
-    @FXML
-    public void composerTaches() {
-        Projet selected = tableProjets.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
-
-        // Ouvre un Alert ou un second FXML
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Composer Tâches");
-        alert.setHeaderText("Tâches du projet : " + selected.getNom());
-        StringBuilder sb = new StringBuilder();
-        sb.append("Tâches existantes dans ce projet : \n");
-        selected.getListeTaches().forEach(t ->
-                sb.append(" - ").append(t.getTitre()).append(" (").append(t.getStatut()).append(")\n")
-        );
-        sb.append("\n(À implémenter : Ajouter / Retirer des Tâches)");
-        alert.setContentText(sb.toString());
-        alert.showAndWait();
-    }
-
+    /**
+     * Ouvre un pop-up pour choisir les membres à ajouter au projet.
+     */
     @FXML
     public void placerMembres() {
         Projet selected = tableProjets.getSelectionModel().getSelectedItem();
@@ -100,15 +93,44 @@ public class ProjetController {
 
             MembresProjetController controller = loader.getController();
             controller.setApplicationManager(this.applicationManager);
-            controller.setProjet(selected); // pour savoir sur quel projet ajouter
+            controller.setProjet(selected); // le projet sur lequel on ajoute des membres
 
             Stage stage = new Stage();
-            stage.setTitle("Placer Membres sur le projet : " + selected.getNom());
+            stage.setTitle("Placer Membres sur " + selected.getNom());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Après fermeture, on rafraîchit la table
+            // Après fermeture, on refresh la table
+            rafraichirTable();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Ouvre un pop-up pour associer des Tâches au projet (ajouter/supprimer).
+     */
+    @FXML
+    public void composerTaches() {
+        Projet selected = tableProjets.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-projet-view.fxml"));
+            AnchorPane root = loader.load();
+
+            TachesProjetController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setProjet(selected);
+
+            Stage stage = new Stage();
+            stage.setTitle("Composer Tâches pour " + selected.getNom());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root, 500, 400));
+            stage.showAndWait();
+
             rafraichirTable();
 
         } catch (IOException e) {
@@ -118,5 +140,6 @@ public class ProjetController {
 
     private void rafraichirTable() {
         tableProjets.getItems().setAll(applicationManager.getListeProjets());
+        tableProjets.refresh();
     }
 }

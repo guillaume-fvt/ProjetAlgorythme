@@ -16,61 +16,42 @@ public class ApplicationManager {
         listeTaches = new ArrayList<>();
     }
 
-    // --- EMPLOYES ---
+    // EMPLOYES
     public void ajouterEmploye(Employe e) {
         listeEmployes.add(e);
     }
-    public void modifierEmploye(Employe e) {
-        // On suppose qu'il est déjà dans la liste
-        // Rien de spécial, on a juste mis à jour ses champs
-    }
+    public void modifierEmploye(Employe e) {}
     public void supprimerEmploye(int id) {
         listeEmployes.removeIf(emp -> emp.getId() == id);
     }
-    public List<Employe> getListeEmployes() {
-        return listeEmployes;
-    }
+    public List<Employe> getListeEmployes() { return listeEmployes; }
 
-    // --- PROJETS ---
+    // PROJETS
     public void ajouterProjet(Projet p) {
         listeProjets.add(p);
     }
-    public void modifierProjet(Projet p) {
-        // Idem
-    }
+    public void modifierProjet(Projet p) {}
     public void supprimerProjet(int id) {
         listeProjets.removeIf(prj -> prj.getId() == id);
     }
-    public List<Projet> getListeProjets() {
-        return listeProjets;
-    }
+    public List<Projet> getListeProjets() { return listeProjets; }
 
-    // --- TACHES ---
-    public void ajouterTache(Tache t) {
-        listeTaches.add(t);
-    }
-    public void modifierTache(Tache t) {
-        // ...
-    }
+    // TACHES
+    public void ajouterTache(Tache t) { listeTaches.add(t); }
+    public void modifierTache(Tache t) {}
     public void supprimerTache(int id) {
-        listeTaches.removeIf(tache -> tache.getId() == id);
+        listeTaches.removeIf(t -> t.getId() == id);
     }
-    public List<Tache> getListeTaches() {
-        return listeTaches;
-    }
+    public List<Tache> getListeTaches() { return listeTaches; }
 
-    /**
-     * Retourne la liste des projets où l'employé figure dans la liste "membres".
-     */
+    // Obtenir la liste des projets d'un employé
     public List<Projet> getProjetsByEmployee(Employe e) {
         return listeProjets.stream()
                 .filter(prj -> prj.getMembres().contains(e))
                 .collect(Collectors.toList());
     }
 
-    // Optionnel : persistance
-    public void sauvegarderDonnees() {
-    }
-    public void chargerDonnees() {
-    }
+    // Sauvegarde / chargement si besoin
+    public void sauvegarderDonnees() {}
+    public void chargerDonnees() {}
 }

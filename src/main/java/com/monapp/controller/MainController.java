@@ -23,11 +23,6 @@ public class MainController {
     }
 
     @FXML
-    public void initialize() {
-        // Rien ici
-    }
-
-    @FXML
     public void handleMenuEmployes() {
         ouvrirNouvelleFenetre("/com/monapp/employe-view.fxml", "Gestion des Employés");
     }
