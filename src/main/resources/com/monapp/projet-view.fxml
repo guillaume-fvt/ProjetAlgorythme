@@ -28,5 +28,7 @@
 
         <Button layoutX="420.0" layoutY="260.0" text="Composer Tâches" onAction="#composerTaches" />
         <Button layoutX="420.0" layoutY="300.0" text="Placer Membres"  onAction="#placerMembres" />
+        <Button text="Générer Rapport" onAction="#genererRapportProjetsCSV" layoutX="420" layoutY="340"  />
+
     </children>
 </AnchorPane>

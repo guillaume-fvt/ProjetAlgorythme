@@ -1,5 +1,6 @@
 package com.monapp.controller;
 
+import com.monapp.model.StatutTache;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
 import javafx.fxml.FXML;
@@ -10,6 +11,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.scene.control.Alert;
+import javafx.stage.FileChooser;
+import java.io.FileWriter;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -114,23 +118,35 @@ public class ProjetController {
      */
     @FXML
     public void composerTaches() {
-        Projet selected = tableProjets.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        // Vérifier qu'un projet est sélectionné
+        Projet selectedProjet = tableProjets.getSelectionModel().getSelectedItem();
+        if (selectedProjet == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table avant de composer des tâches.");
+            alert.showAndWait();
+            return;
+        }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-projet-view.fxml"));
+            // Charger la vue des tâches
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-selection-view.fxml"));
             AnchorPane root = loader.load();
 
-            TachesProjetController controller = loader.getController();
+            // Récupérer le contrôleur associé
+            TachesSelectionController controller = loader.getController();
             controller.setApplicationManager(this.applicationManager);
-            controller.setProjet(selected);
+            controller.setProjet(selectedProjet);
 
+            // Créer une nouvelle fenêtre
             Stage stage = new Stage();
-            stage.setTitle("Composer Tâches pour " + selected.getNom());
+            stage.setTitle("Associer des Tâches à " + selectedProjet.getNom());
             stage.initModality(Modality.WINDOW_MODAL);
-            stage.setScene(new Scene(root, 500, 400));
+            stage.setScene(new Scene(root, 600, 400));
             stage.showAndWait();
 
+            // Rafraîchir la table des projets après fermeture de la fenêtre
             rafraichirTable();
 
         } catch (IOException e) {
@@ -138,8 +154,61 @@ public class ProjetController {
         }
     }
 
+
     private void rafraichirTable() {
         tableProjets.getItems().setAll(applicationManager.getListeProjets());
         tableProjets.refresh();
     }
+
+    @FXML
+    public void genererRapportProjetsCSV() {
+        // Utiliser FileChooser pour choisir où enregistrer le fichier
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Enregistrer le rapport des projets");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+        java.io.File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try (FileWriter writer = new FileWriter(file)) {
+                // Écrire l'en-tête du fichier CSV
+                writer.append("Nom du Projet,Date Début,Date Fin,Taux d'Avancement (%)\n");
+
+                // Parcourir les projets affichés dans le tableau
+                for (Projet projet : tableProjets.getItems()) {
+                    // Calculer le taux d'avancement
+                    int totalTaches = projet.getListeTaches().size();
+                    long tachesTerminees = projet.getListeTaches().stream()
+                            .filter(tache -> tache.getStatut() == StatutTache.TERMINE)
+                            .count();
+                    double tauxAvancement = (totalTaches > 0) ? ((double) tachesTerminees / totalTaches) * 100 : 0;
+
+                    // Ajouter les données du projet dans le fichier CSV
+                    writer.append(String.format(
+                            "%s,%s,%s,%.2f\n",
+                            projet.getNom(),
+                            projet.getDateDebut() != null ? projet.getDateDebut().toString() : "??",
+                            projet.getDateFin() != null ? projet.getDateFin().toString() : "??",
+                            tauxAvancement
+                    ));
+                }
+
+                // Afficher une notification de succès
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Rapport généré");
+                alert.setHeaderText(null);
+                alert.setContentText("Le rapport des projets a été enregistré avec succès !");
+                alert.showAndWait();
+
+            } catch (IOException e) {
+                // Afficher une notification d'erreur
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur");
+                alert.setHeaderText(null);
+                alert.setContentText("Une erreur s'est produite lors de l'enregistrement du rapport.");
+                alert.showAndWait();
+                e.printStackTrace();
+            }
+        }
+    }
 }
+

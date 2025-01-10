@@ -7,6 +7,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.Alert;
+import javafx.stage.FileChooser;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 
 import java.time.format.DateTimeFormatter;
 
@@ -115,5 +120,64 @@ public class TacheController {
     private void rafraichirTable() {
         tableTaches.getItems().setAll(applicationManager.getListeTaches());
         tableTaches.refresh();
+    }
+
+    @FXML
+    public void genererRetardsCSV() {
+        // Utiliser FileChooser pour choisir où enregistrer le fichier
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Enregistrer le rapport des retards");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+        java.io.File file = fileChooser.showSaveDialog(null);
+
+        if (file != null) {
+            try (FileWriter writer = new FileWriter(file)) {
+                // Écrire l'en-tête du fichier CSV
+                writer.append("Titre,Description,Statut,Date Limite,Prioritaire,Retard (heures)\n");
+
+                // Parcourir toutes les tâches affichées dans le tableau
+                for (Tache tache : tableTaches.getItems()) {
+                    // Vérifier si la tâche est en retard
+                    if (tache.getDateLimite() != null &&
+                            tache.getDateLimite().isBefore(java.time.LocalDate.now()) &&
+                            tache.getStatut() != StatutTache.TERMINE) {
+
+                        // Calculer le retard en heures
+                        long retardHeures = java.time.Duration.between(
+                                tache.getDateLimite().atStartOfDay(),
+                                java.time.LocalDateTime.now()
+                        ).toHours();
+
+                        // Ajouter les détails de la tâche dans le fichier CSV
+                        String prioritaire = (tache.getPriorite() > 0) ? "Oui" : "Non";
+                        writer.append(String.format(
+                                "%s,%s,%s,%s,%s,%d\n",
+                                tache.getTitre(),
+                                tache.getDescription(),
+                                tache.getStatut().name(),
+                                tache.getDateLimite().toString(),
+                                prioritaire,
+                                retardHeures
+                        ));
+                    }
+                }
+
+                // Afficher une notification de succès
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Rapport généré");
+                alert.setHeaderText(null);
+                alert.setContentText("Le rapport des retards a été enregistré avec succès !");
+                alert.showAndWait();
+
+            } catch (IOException e) {
+                // Afficher une notification d'erreur
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Erreur");
+                alert.setHeaderText(null);
+                alert.setContentText("Une erreur s'est produite lors de l'enregistrement du rapport.");
+                alert.showAndWait();
+                e.printStackTrace();
+            }
+        }
     }
 }
