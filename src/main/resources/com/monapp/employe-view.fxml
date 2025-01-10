@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.monapp.controller.EmployeController"
+            prefHeight="480.0" prefWidth="600.0">
+
+    <children>
+        <Label layoutX="14.0" layoutY="14.0" text="Gestion des Employés" />
+
+        <TableView fx:id="tableEmployes" layoutX="14.0" layoutY="40.0"
+                   prefWidth="572.0" prefHeight="200.0">
+            <columns>
+                <TableColumn fx:id="colNom"     text="Nom"     prefWidth="180.0" />
+                <TableColumn fx:id="colPrenom" text="Prénom"  prefWidth="180.0" />
+                <TableColumn fx:id="colRole"   text="Rôle"    prefWidth="180.0" />
+            </columns>
+        </TableView>
+
+        <TextField fx:id="tfNom"    layoutX="14.0" layoutY="260.0" promptText="Nom" />
+        <TextField fx:id="tfPrenom" layoutX="14.0" layoutY="300.0" promptText="Prénom" />
+        <TextField fx:id="tfRole"   layoutX="14.0" layoutY="340.0" promptText="Rôle" />
+
+        <Button layoutX="250.0" layoutY="260.0" text="Ajouter"   onAction="#ajouterEmploye"/>
+        <Button layoutX="250.0" layoutY="300.0" text="Modifier"  onAction="#modifierEmploye"/>
+        <Button layoutX="250.0" layoutY="340.0" text="Supprimer" onAction="#supprimerEmploye"/>
+
+        <Button layoutX="420.0" layoutY="260.0" text="Afficher Infos"
+                onAction="#afficherInfosEmploye"/>
+        <Button layoutX="420.0" layoutY="300.0" text="Historique Projets"
+                onAction="#afficherHistoriqueEmploye"/>
+    </children>
+</AnchorPane>
