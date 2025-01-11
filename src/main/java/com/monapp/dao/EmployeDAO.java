@@ -1,0 +1,81 @@
+package com.monapp.dao;
+import com.monapp.model.Employe;
+import com.monapp.database.DatabaseConnection;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EmployeDAO {
+
+    public List<Employe> getAllEmployes() {
+        String query = "SELECT * FROM Employe";
+        List<Employe> employes = new ArrayList<>();
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                Employe employe = new Employe();
+                employe.setId(rs.getInt("id"));
+                employe.setNom(rs.getString("nom"));
+                employe.setPrenom(rs.getString("prenom"));
+                employe.setRole(rs.getString("role"));
+                employes.add(employe);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return employes;
+    }
+
+
+    public void addEmploye(Employe employe) {
+        String query = "INSERT INTO Employe (nom, prenom, role) VALUES (?, ?, ?)";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, employe.getNom());
+            pstmt.setString(2, employe.getPrenom());
+            pstmt.setString(3, employe.getRole());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateEmploye(Employe employe) {
+        String query = "UPDATE Employe SET nom = ?, prenom = ?, role = ? WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, employe.getNom());
+            pstmt.setString(2, employe.getPrenom());
+            pstmt.setString(3, employe.getRole());
+            pstmt.setInt(4, employe.getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteEmploye(int id) {
+        String query = "DELETE FROM Employe WHERE id = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+

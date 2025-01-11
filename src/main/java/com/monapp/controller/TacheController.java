@@ -1,5 +1,6 @@
 package com.monapp.controller;
 
+import com.monapp.dao.TacheDAO;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.StatutTache;
 import com.monapp.model.Tache;
@@ -18,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 public class TacheController {
 
     private ApplicationManager applicationManager;
+    private final TacheDAO tacheDAO = new TacheDAO(); // Instance du DAO pour gérer les tâches
 
     @FXML
     private TableView<Tache> tableTaches;
@@ -109,6 +111,7 @@ public class TacheController {
                 null
         );
         applicationManager.ajouterTache(t);
+        tacheDAO.ajouterTache(t); // Utilise le DAO pour ajouter dans la base
         rafraichirTable();
         viderChamps();
     }
@@ -123,6 +126,7 @@ public class TacheController {
             selected.setPriorite(cbPrioritaire.isSelected() ? 1 : 0);
             selected.setDateLimite(dpDateLimite.getValue());
             applicationManager.modifierTache(selected);
+            tacheDAO.modifierTache(selected); // Utilise le DAO pour mettre à jour dans la base
             rafraichirTable();
             viderChamps();
         }
@@ -133,6 +137,7 @@ public class TacheController {
         Tache selected = tableTaches.getSelectionModel().getSelectedItem();
         if (selected != null) {
             applicationManager.supprimerTache(selected.getId());
+            tacheDAO.supprimerTache(selected.getId()); // Utilise le DAO pour supprimer dans la base
             rafraichirTable();
             viderChamps();
         }
@@ -150,7 +155,7 @@ public class TacheController {
     }
 
     private void rafraichirTable() {
-        tableTaches.getItems().setAll(applicationManager.getListeTaches());
+        tableTaches.getItems().setAll(tacheDAO.getToutesLesTaches()); // Charger les tâches depuis la base
         tableTaches.refresh();
     }
 

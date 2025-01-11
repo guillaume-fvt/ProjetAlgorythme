@@ -1,5 +1,6 @@
 package com.monapp.controller;
 
+import com.monapp.dao.ProjetDAO;
 import com.monapp.model.StatutTache;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
@@ -21,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 public class ProjetController {
 
     private ApplicationManager applicationManager;
+    private final ProjetDAO projetDAO = new ProjetDAO();
 
     @FXML
     private TableView<Projet> tableProjets;
@@ -92,6 +94,7 @@ public class ProjetController {
                 dpDateFin.getValue()
         );
         applicationManager.ajouterProjet(p);
+        projetDAO.ajouterProjet(p);
         rafraichirTable();
         viderChamps();
     }
@@ -104,6 +107,7 @@ public class ProjetController {
             selected.setDateDebut(dpDateDebut.getValue());
             selected.setDateFin(dpDateFin.getValue());
             applicationManager.modifierProjet(selected);
+            projetDAO.modifierProjet(selected);
             rafraichirTable();
             viderChamps();
         } else {
@@ -120,6 +124,7 @@ public class ProjetController {
         Projet selected = tableProjets.getSelectionModel().getSelectedItem();
         if (selected != null) {
             applicationManager.supprimerProjet(selected.getId());
+            projetDAO.supprimerProjet(selected.getId());
             rafraichirTable();
             viderChamps();
         } else {
@@ -137,29 +142,42 @@ public class ProjetController {
     @FXML
     public void placerMembres() {
         Projet selected = tableProjets.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table avant d'ajouter des membres.");
+            alert.showAndWait();
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/membres-projet-view.fxml"));
             AnchorPane root = loader.load();
 
+            // Récupérer le contrôleur associé à la vue
             MembresProjetController controller = loader.getController();
             controller.setApplicationManager(this.applicationManager);
-            controller.setProjet(selected); // le projet sur lequel on ajoute des membres
+            controller.setProjet(selected);
 
+            // Charger la liste des employés depuis la base
+            controller.chargerEmployesDisponibles();
+
+            // Afficher la fenêtre
             Stage stage = new Stage();
             stage.setTitle("Placer Membres sur " + selected.getNom());
             stage.initModality(Modality.WINDOW_MODAL);
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Après fermeture, on refresh la table
+            // Rafraîchir la table après fermeture de la fenêtre
             rafraichirTable();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     /**
      * Ouvre un pop-up pour associer des Tâches au projet (ajouter/supprimer).
@@ -215,7 +233,7 @@ public class ProjetController {
 
 
     private void rafraichirTable() {
-        tableProjets.getItems().setAll(applicationManager.getListeProjets());
+        tableProjets.getItems().setAll(projetDAO.getTousLesProjets());
         tableProjets.refresh();
     }
 

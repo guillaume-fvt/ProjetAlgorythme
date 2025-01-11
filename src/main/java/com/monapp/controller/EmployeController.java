@@ -1,5 +1,6 @@
 package com.monapp.controller;
 
+import com.monapp.dao.EmployeDAO;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Employe;
 import com.monapp.model.Projet;
@@ -12,6 +13,7 @@ import java.util.List;
 public class EmployeController {
 
     private ApplicationManager applicationManager;
+    private EmployeDAO employeDAO = new EmployeDAO();
 
     @FXML
     private TableView<Employe> tableEmployes;
@@ -74,7 +76,8 @@ public class EmployeController {
                 tfPrenom.getText(),
                 tfRole.getText()
         );
-        applicationManager.ajouterEmploye(e);
+
+        employeDAO.addEmploye(e);
         rafraichirTable();
         viderChamps();
     }
@@ -87,6 +90,7 @@ public class EmployeController {
             selected.setPrenom(tfPrenom.getText());
             selected.setRole(tfRole.getText());
             applicationManager.modifierEmploye(selected);
+            employeDAO.updateEmploye(selected);
             rafraichirTable();
             viderChamps();
         }
@@ -104,6 +108,7 @@ public class EmployeController {
         Employe selected = tableEmployes.getSelectionModel().getSelectedItem();
         if (selected != null) {
             applicationManager.supprimerEmploye(selected.getId());
+            employeDAO.deleteEmploye(selected.getId());
             rafraichirTable();
             viderChamps();
         }
@@ -135,28 +140,17 @@ public class EmployeController {
 
     @FXML
     public void afficherHistoriqueEmploye() {
-        Employe selected = tableEmployes.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            // Récupérer tous les projets auxquels participe cet employé
-            List<Projet> projetsEmploye = applicationManager.getProjetsByEmployee(selected);
-            StringBuilder sb = new StringBuilder();
-            sb.append("Projets de ").append(selected.getNom()).append(" :\n");
-            for (Projet p : projetsEmploye) {
-                sb.append("- ").append(p.getNom()).append(" (ID=").append(p.getId()).append(")\n");
-            }
-            if (projetsEmploye.isEmpty()) {
-                sb.append("Aucun projet trouvé.\n");
-            }
-
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Historique Projets");
-            alert.setHeaderText("Projets de " + selected.getNom());
-            alert.setContentText(sb.toString());
-            alert.showAndWait();
-        }
+        // Exemple d'action
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Historique Employé");
+        alert.setHeaderText(null);
+        alert.setContentText("L'historique de l'employé sera affiché ici.");
+        alert.showAndWait();
     }
 
+
     private void rafraichirTable() {
-        tableEmployes.getItems().setAll(applicationManager.getListeEmployes());
+        tableEmployes.getItems().setAll(employeDAO.getAllEmployes());
+        tableEmployes.refresh();
     }
 }
