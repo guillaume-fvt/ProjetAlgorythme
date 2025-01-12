@@ -1,9 +1,11 @@
 package com.monapp.controller;
 
 import com.monapp.dao.ProjetDAO;
+import com.monapp.dao.TacheDAO;
 import com.monapp.model.StatutTache;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
+import com.monapp.model.Tache;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -18,12 +20,16 @@ import java.io.FileWriter;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ProjetController {
 
     private ApplicationManager applicationManager;
     private final ProjetDAO projetDAO = new ProjetDAO();
 
+    @FXML
+    private TableView<Tache> tableTaches;
     @FXML
     private TableView<Projet> tableProjets;
     @FXML
@@ -184,46 +190,33 @@ public class ProjetController {
      */
     @FXML
     public void composerTaches() {
-        // Vérifier qu'un projet est sélectionné
         Projet selectedProjet = tableProjets.getSelectionModel().getSelectedItem();
         if (selectedProjet == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Aucun projet sélectionné");
             alert.setHeaderText(null);
-            alert.setContentText("Veuillez sélectionner un projet dans la table avant de composer des tâches.");
+            alert.setContentText("Veuillez sélectionner un projet.");
             alert.showAndWait();
             return;
         }
 
         try {
-            // Charger la vue des tâches
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-selection-view.fxml"));
             AnchorPane root = loader.load();
 
-            // Récupérer le contrôleur associé
             TachesSelectionController controller = loader.getController();
             controller.setApplicationManager(this.applicationManager);
             controller.setProjet(selectedProjet);
 
-            // Créer une nouvelle fenêtre
-            Stage stage = new Stage();
-            stage.setTitle("Associer des Tâches à " + selectedProjet.getNom());
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.setScene(new Scene(root, 600, 400));
-
-            // Ajouter un listener pour détecter lorsqu'une tâche est ajoutée
             controller.setOnTaskAddedListener(() -> {
-                Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
-                confirmationAlert.setTitle("Tâche ajoutée");
-                confirmationAlert.setHeaderText(null);
-                confirmationAlert.setContentText("Une tâche a été ajoutée avec succès au projet \"" + selectedProjet.getNom() + "\".");
-                confirmationAlert.showAndWait();
-
-                // Rafraîchir la table des projets
-                rafraichirTable();
+                // Rafraîchir les tâches après ajout
+                rafraichirTableTaches();
             });
 
-            // Afficher la fenêtre (ne pas fermer automatiquement après ajout)
+            Stage stage = new Stage();
+            stage.setTitle("Associer des Tâches");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
             stage.show();
 
         } catch (IOException e) {
@@ -231,11 +224,35 @@ public class ProjetController {
         }
     }
 
-
     private void rafraichirTable() {
         tableProjets.getItems().setAll(projetDAO.getTousLesProjets());
         tableProjets.refresh();
     }
+
+    private void rafraichirTableTaches() {
+        if (tableTaches == null) {
+            System.err.println("Erreur : tableTaches est null.");
+            return;
+        }
+        if (applicationManager == null) {
+            System.err.println("Erreur : applicationManager est null.");
+            return;
+        }
+
+        // Récupérer toutes les tâches depuis le gestionnaire d'application
+        List<Tache> toutesLesTaches = applicationManager.getListeTaches();
+
+        // Filtrer les tâches qui ne sont pas assignées à un projet
+        List<Tache> tachesNonAssignees = toutesLesTaches.stream()
+                .filter(tache -> tache.getProjetId() == 0 || tache.getProjetId() == null)
+                .collect(Collectors.toList());
+
+        // Mettre à jour la table avec les tâches filtrées
+        tableTaches.getItems().setAll(tachesNonAssignees);
+        tableTaches.refresh();
+    }
+
+
 
     @FXML
     public void genererRapportProjetsCSV() {
@@ -287,20 +304,29 @@ public class ProjetController {
             }
         }
     }
+
     @FXML
     public void verifierNotifications() {
         StringBuilder message = new StringBuilder();
 
-        for (Projet projet : tableProjets.getItems()) {
+        // Charger tous les projets depuis la base de données
+        ProjetDAO projetDAO = new ProjetDAO();
+        List<Projet> projets = projetDAO.getTousLesProjets();
+
+        for (Projet projet : projets) {
+            // Charger les tâches associées au projet
+            List<Tache> taches = projetDAO.getTachesByProjetId(projet.getId());
+            projet.setListeTaches(taches);
+
             // Calculer les tâches terminées et le total
-            long tachesTerminees = projet.getListeTaches().stream()
+            long tachesTerminees = taches.stream()
                     .filter(tache -> tache.getStatut() == StatutTache.TERMINE)
                     .count();
-            long totalTaches = projet.getListeTaches().size();
+            long totalTaches = taches.size();
             double tauxAvancement = (totalTaches > 0) ? ((double) tachesTerminees / totalTaches) * 100 : 0;
 
             // 1. Tâches retardées
-            long tachesRetardees = projet.getListeTaches().stream()
+            long tachesRetardees = taches.stream()
                     .filter(tache -> tache.getDateLimite() != null &&
                             tache.getDateLimite().isBefore(java.time.LocalDate.now()) &&
                             tache.getStatut() != StatutTache.TERMINE)
@@ -321,7 +347,7 @@ public class ProjetController {
             }
 
             // 3. Projet terminé
-            if (tachesTerminees == totalTaches && totalTaches > 0) {
+            if (totalTaches > 0 && tachesTerminees == totalTaches) {
                 message.append("✅ Projet \"").append(projet.getNom())
                         .append("\" est terminé ! Félicitations !\n");
                 continue; // Pas besoin de vérifier les paliers pour un projet terminé
@@ -334,6 +360,12 @@ public class ProjetController {
                 message.append("📈 Projet \"").append(projet.getNom())
                         .append("\" a atteint ").append(palierActuel).append("% d'avancement.\n");
                 projet.setPalierPrecedent(palierActuel); // Met à jour le palier atteint
+
+                // Mettre à jour le palier dans la base de données
+                boolean success = projetDAO.mettreAJourPalier(projet.getId(), palierActuel);
+                if (!success) {
+                    System.err.println("Erreur lors de la mise à jour du palier pour le projet ID " + projet.getId());
+                }
             }
         }
 

@@ -102,7 +102,6 @@ public class TacheDAO {
         return taches;
     }
 
-
     // Mettre à jour une tâche existante
     public void modifierTache(Tache tache) {
         String query = "UPDATE Tache SET titre = ?, description = ?, statut = ?, priorite = ?, date_limite = ?, employe_id = ? " +
@@ -159,4 +158,31 @@ public class TacheDAO {
 
         return tache;
     }
+    public void mettreAJourProjetId(Tache tache) {
+        String query = "UPDATE Tache SET projet_id = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tache.getProjetId());
+            pstmt.setInt(2, tache.getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void assignerTacheAuProjet(int tacheId, int projetId) {
+        String query = "UPDATE Tache SET projet_id = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, projetId);
+            pstmt.setInt(2, tacheId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

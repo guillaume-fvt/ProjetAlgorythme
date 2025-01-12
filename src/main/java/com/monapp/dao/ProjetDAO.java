@@ -206,4 +206,22 @@ public class ProjetDAO {
             e.printStackTrace();
         }
     }
+    // Mettre à jour le palier précédent pour un projet
+    public boolean mettreAJourPalier(int projetId, int palierActuel) {
+        String query = "UPDATE Projet SET palier_precedent = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, palierActuel);
+            pstmt.setInt(2, projetId);
+
+            int rowsUpdated = pstmt.executeUpdate();
+            return rowsUpdated > 0; // Retourne true si au moins une ligne a été mise à jour
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Retourne false en cas d'erreur
+        }
+    }
+
+
 }

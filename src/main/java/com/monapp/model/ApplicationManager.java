@@ -2,6 +2,7 @@ package com.monapp.model;
 
 import com.monapp.dao.EmployeDAO;
 import com.monapp.dao.ProjetDAO;
+import com.monapp.dao.TacheDAO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ public class ApplicationManager {
     private List<Employe> listeEmployes;
     private final List<Projet> listeProjets;
     private final List<Tache> listeTaches;
+    TacheDAO tacheDAO = new TacheDAO();
 
     public ApplicationManager() {
         listeEmployes = new ArrayList<>();
@@ -99,4 +101,20 @@ public class ApplicationManager {
     public List<Tache> getListeTaches() {
         return listeTaches;
     }
+    public void ajouterTacheAuProjet(int tacheId, int projetId) {
+        // Rechercher la tâche par son ID
+        Tache tache = getListeTaches().stream()
+                .filter(t -> t.getId() == tacheId)
+                .findFirst()
+                .orElse(null);
+
+        if (tache != null) {
+            // Associer la tâche au projet
+            tache.setProjetId(projetId);
+            tacheDAO.assignerTacheAuProjet(tacheId, projetId);
+        } else {
+            System.err.println("Erreur : Tâche avec ID " + tacheId + " introuvable.");
+        }
+    }
+
 }

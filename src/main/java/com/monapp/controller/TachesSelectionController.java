@@ -1,12 +1,15 @@
 package com.monapp.controller;
 
+import com.monapp.dao.TacheDAO;
 import javafx.stage.Stage;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
 import com.monapp.model.Tache;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TachesSelectionController {
 
@@ -20,10 +23,11 @@ public class TachesSelectionController {
     private TableColumn<Tache, String> colTitre;
     @FXML
     private TableColumn<Tache, String> colStatut;
+    private TacheDAO tacheDAO;
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
-        rafraichirTable();
+        rafraichirTableTaches();
     }
 
     public void setProjet(Projet projet) {
@@ -46,11 +50,21 @@ public class TachesSelectionController {
 
     @FXML
     public void ajouterTachesAuProjet() {
+        // Vérifier que le projet est bien défini
+        if (projet == null) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("Aucun projet sélectionné !");
+            alert.showAndWait();
+            return;
+        }
+
         // Récupérer les tâches sélectionnées
         var selectedTaches = tableTaches.getSelectionModel().getSelectedItems();
 
-        if (selectedTaches.isEmpty()) {
-            Alert alert = new Alert(AlertType.WARNING);
+        if (selectedTaches == null || selectedTaches.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Aucune tâche sélectionnée");
             alert.setHeaderText(null);
             alert.setContentText("Veuillez sélectionner au moins une tâche à ajouter au projet.");
@@ -59,25 +73,42 @@ public class TachesSelectionController {
         }
 
         // Ajouter les tâches sélectionnées au projet
-        selectedTaches.forEach(projet::ajouterTache);
+        for (Tache tache : selectedTaches) {
+            tache.setProjetId(projet.getId()); // Associer l'ID du projet à la tâche
+            applicationManager.ajouterTacheAuProjet(tache.getId(), projet.getId()); // Mettez à jour la tâche dans l'application
+        }
 
-        // Appeler le listener pour notifier le contrôleur principal
+        // Rafraîchir la table des tâches disponibles
+        rafraichirTableTaches();
+
+        // Notifier l'écouteur principal
         if (onTaskAddedListener != null) {
             onTaskAddedListener.run();
         }
 
-        // Rafraîchir la table après ajout
-        rafraichirTable();
+        // Afficher un message de confirmation
+        Alert confirmationAlert = new Alert(Alert.AlertType.INFORMATION);
+        confirmationAlert.setTitle("Succès");
+        confirmationAlert.setHeaderText(null);
+        confirmationAlert.setContentText("Les tâches sélectionnées ont été ajoutées au projet.");
+        confirmationAlert.showAndWait();
     }
 
-    private void rafraichirTable() {
-        if (applicationManager != null) {
-            tableTaches.getItems().setAll(applicationManager.getListeTaches());
+
+    private void rafraichirTableTaches() {
+        if (applicationManager != null && tableTaches != null) {
+            List<Tache> tachesNonAssignees = applicationManager.getListeTaches().stream()
+                    .filter(tache -> tache.getProjetId() == null || tache.getProjetId() == 0) // Filtre
+                    .collect(Collectors.toList());
+
+            tableTaches.getItems().setAll(tachesNonAssignees);
             tableTaches.refresh();
         } else {
-            System.err.println("ApplicationManager est null. Impossible de charger les tâches.");
+            System.err.println("Erreur : applicationManager ou tableTaches est null.");
         }
     }
+
+
 
     @FXML
     public void fermerFenetre() {

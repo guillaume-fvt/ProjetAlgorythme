@@ -10,12 +10,14 @@ public class Tache {
     private int priorite;
     private LocalDate dateLimite;
     private Employe employeAssigne; // optionnel
+    private Integer projetId; // ID du projet associé (peut être null)
 
     public Tache() {
     }
 
     public Tache(int id, String titre, String description,
-                 StatutTache statut, int priorite, LocalDate dateLimite, Employe employeAssigne) {
+                 StatutTache statut, int priorite, LocalDate dateLimite,
+                 Employe employeAssigne, Integer projetId) {
         this.id = id;
         this.titre = titre;
         this.description = description;
@@ -23,8 +25,10 @@ public class Tache {
         this.priorite = priorite;
         this.dateLimite = dateLimite;
         this.employeAssigne = employeAssigne;
+        this.projetId = projetId;
     }
 
+    // Getters et Setters
     public int getId() {
         return id;
     }
@@ -81,6 +85,14 @@ public class Tache {
         this.employeAssigne = employeAssigne;
     }
 
+    public Integer getProjetId() {
+        return projetId;
+    }
+
+    public void setProjetId(Integer projetId) {
+        this.projetId = projetId;
+    }
+
     @Override
     public String toString() {
         return "Tache{" +
@@ -90,6 +102,7 @@ public class Tache {
                 ", priorite=" + priorite +
                 ", dateLimite=" + dateLimite +
                 ", employeAssigne=" + (employeAssigne != null ? employeAssigne.getNom() : "Aucun") +
+                ", projetId=" + (projetId != null ? projetId : "Aucun") +
                 '}';
     }
 }

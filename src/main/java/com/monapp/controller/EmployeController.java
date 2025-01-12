@@ -1,6 +1,7 @@
 package com.monapp.controller;
 
 import com.monapp.dao.EmployeDAO;
+import com.monapp.database.DatabaseConnection;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Employe;
 import com.monapp.model.Projet;
@@ -8,12 +9,18 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeController {
 
     private ApplicationManager applicationManager;
     private EmployeDAO employeDAO = new EmployeDAO();
+
 
     @FXML
     private TableView<Employe> tableEmployes;
@@ -140,13 +147,77 @@ public class EmployeController {
 
     @FXML
     public void afficherHistoriqueEmploye() {
-        // Exemple d'action
+        // Récupérer l'employé sélectionné dans une liste ou tableau (selon votre interface)
+        Employe employeSelectionne = tableEmployes.getSelectionModel().getSelectedItem();
+
+        if (employeSelectionne == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun employé sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un employé pour afficher son historique.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Liste pour stocker les projets associés à l'employé
+        List<Projet> projetsAssocies = new ArrayList<>();
+
+        // Charger les projets associés à cet employé depuis la base de données
+        String query = "SELECT p.id, p.nom, p.date_debut, p.date_fin " +
+                "FROM Projet p " +
+                "JOIN Employe_Projet ep ON p.id = ep.projet_id " +
+                "WHERE ep.employe_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, employeSelectionne.getId()); // Assurez-vous que l'objet Employe a un ID valide
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Projet projet = new Projet();
+                    projet.setId(rs.getInt("id"));
+                    projet.setNom(rs.getString("nom"));
+                    projet.setDateDebut(rs.getDate("date_debut").toLocalDate());
+                    projet.setDateFin(rs.getDate("date_fin").toLocalDate());
+                    projetsAssocies.add(projet);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("Une erreur est survenue lors de la récupération des projets associés.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Vérifier si l'employé a des projets associés
+        if (projetsAssocies.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Aucun projet trouvé");
+            alert.setHeaderText(null);
+            alert.setContentText("Aucun projet associé à l'employé sélectionné.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Construire un message pour afficher les projets
+        StringBuilder message = new StringBuilder("Historique des projets de l'employé :\n");
+        for (Projet projet : projetsAssocies) {
+            message.append("- ").append(projet.getNom())
+                    .append(" (du ").append(projet.getDateDebut())
+                    .append(" au ").append(projet.getDateFin()).append(")\n");
+        }
+
+        // Afficher l'historique dans une boîte de dialogue
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Historique Employé");
-        alert.setHeaderText(null);
-        alert.setContentText("L'historique de l'employé sera affiché ici.");
+        alert.setHeaderText("Projets associés à l'employé : " + employeSelectionne.getNom());
+        alert.setContentText(message.toString());
         alert.showAndWait();
     }
+
+
 
 
     private void rafraichirTable() {

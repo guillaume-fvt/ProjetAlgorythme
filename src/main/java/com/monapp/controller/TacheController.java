@@ -108,6 +108,7 @@ public class TacheController {
                 cbStatut.getValue(),
                 priorite,
                 dpDateLimite.getValue(),
+                null,
                 null
         );
         applicationManager.ajouterTache(t);
