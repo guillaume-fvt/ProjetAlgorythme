@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class TacheController {
 
@@ -162,7 +163,6 @@ public class TacheController {
 
     @FXML
     public void genererRetardsCSV() {
-        // Utiliser FileChooser pour choisir où enregistrer le fichier
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Enregistrer le rapport des retards");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
@@ -171,10 +171,13 @@ public class TacheController {
         if (file != null) {
             try (FileWriter writer = new FileWriter(file)) {
                 // Écrire l'en-tête du fichier CSV
-                writer.append("Titre,Description,Statut,Date Limite,Prioritaire,Retard (heures)\n");
+                writer.append("Titre,Description,Statut,Date Limite,Prioritaire,Projet_id,Employé,Retard (heures)\n");
 
-                // Parcourir toutes les tâches affichées dans le tableau
-                for (Tache tache : tableTaches.getItems()) {
+                // Récupérer les tâches depuis la base de données
+                List<Tache> taches = tacheDAO.getToutesLesTaches();
+
+                // Parcourir toutes les tâches récupérées
+                for (Tache tache : taches) {
                     // Vérifier si la tâche est en retard
                     if (tache.getDateLimite() != null &&
                             tache.getDateLimite().isBefore(java.time.LocalDate.now()) &&
@@ -188,13 +191,18 @@ public class TacheController {
 
                         // Ajouter les détails de la tâche dans le fichier CSV
                         String prioritaire = (tache.getPriorite() > 0) ? "Oui" : "Non";
+                        String projetId = (tache.getProjetId() != null) ? tache.getProjetId().toString() : "N/A";
+                        String employeNom = (tache.getEmployeAssigne() != null) ? tache.getEmployeAssigne().getNom() : "Non assigné";
+
                         writer.append(String.format(
-                                "%s,%s,%s,%s,%s,%d\n",
+                                "%s,%s,%s,%s,%s,%s,%s,%d\n",
                                 tache.getTitre(),
                                 tache.getDescription(),
                                 tache.getStatut().name(),
                                 tache.getDateLimite().toString(),
                                 prioritaire,
+                                projetId,
+                                employeNom,
                                 retardHeures
                         ));
                     }
@@ -218,4 +226,6 @@ public class TacheController {
             }
         }
     }
+
+
 }

@@ -1,5 +1,6 @@
 package com.monapp.controller;
 
+import com.monapp.dao.TacheDAO;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Tache;
 import javafx.fxml.FXML;
@@ -25,6 +26,9 @@ public class CalendarController {
 
     private ApplicationManager applicationManager;
 
+    private TacheDAO tacheDAO;
+    private List<Tache> listeTaches;
+
     public static void ouvrirCalendarScene(ApplicationManager am, Window parentWindow) {
         try {
             FXMLLoader loader = new FXMLLoader(CalendarController.class.getResource("/com/monapp/calendar-view.fxml"));
@@ -48,6 +52,12 @@ public class CalendarController {
     public void setApplicationManager(ApplicationManager am) {
         this.applicationManager = am;
         afficherCalendrier(LocalDate.now());
+    }
+    @FXML
+    public void initialize() {
+        this.tacheDAO = new TacheDAO();
+        this.listeTaches = tacheDAO.getToutesLesTaches(); // Charger les tâches depuis la base
+        afficherCalendrier(LocalDate.now()); // Afficher le calendrier avec les tâches
     }
 
     /**
@@ -89,7 +99,7 @@ public class CalendarController {
                     LocalDate currentDate = LocalDate.of(ym.getYear(), ym.getMonth(), dayCounter);
 
                     // Récupérer les tâches pour ce jour
-                    List<Tache> tachesDuJour = applicationManager.getListeTaches().stream()
+                    List<Tache> tachesDuJour = listeTaches.stream()
                             .filter(t -> currentDate.equals(t.getDateLimite()))
                             .collect(Collectors.toList());
 

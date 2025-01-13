@@ -83,6 +83,7 @@ public class TacheDAO {
                 tache.setStatut(StatutTache.valueOf(rs.getString("statut")));
                 tache.setPriorite(rs.getBoolean("priorite") ? 1 : 0);
                 tache.setDateLimite(rs.getDate("date_limite").toLocalDate());
+                tache.setProjetId(rs.getInt("projet_id"));
 
                 int employeId = rs.getInt("employe_id");
                 if (employeId != 0) {
@@ -90,6 +91,7 @@ public class TacheDAO {
                     employe.setId(employeId);
                     employe.setNom(rs.getString("employe_nom"));
                     tache.setEmployeAssigne(employe);
+                    tache.setProjetId(rs.getInt("projet_id"));
                 }
 
                 taches.add(tache);

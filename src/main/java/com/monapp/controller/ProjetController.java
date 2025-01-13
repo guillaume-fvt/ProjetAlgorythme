@@ -339,8 +339,8 @@ public class ProjetController {
 
             // 2. Projet approchant de son échéance
             if (projet.getDateFin() != null &&
-                    projet.getDateFin().isBefore(java.time.LocalDate.now().plusDays(7)) &&
-                    projet.getDateFin().isAfter(java.time.LocalDate.now())) {
+                    projet.getDateFin().isBefore(java.time.LocalDate.now().plusDays(4)) &&
+                    projet.getDateFin().isAfter(java.time.LocalDate.now())&& tachesTerminees!=totalTaches) {
                 message.append("⏳ Projet \"").append(projet.getNom())
                         .append("\" approche de son échéance (Date fin : ")
                         .append(projet.getDateFin()).append(").\n");
