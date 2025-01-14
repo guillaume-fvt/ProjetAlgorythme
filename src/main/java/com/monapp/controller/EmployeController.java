@@ -83,7 +83,7 @@ public class EmployeController {
                 tfPrenom.getText(),
                 tfRole.getText()
         );
-
+        applicationManager.ajouterEmploye(e);
         employeDAO.addEmploye(e);
         rafraichirTable();
         viderChamps();
