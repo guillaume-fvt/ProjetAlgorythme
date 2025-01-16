@@ -36,17 +36,6 @@ public class MembresProjetController {
         chargerEmployesDisponibles(); // Charge les employés disponibles
     }
 
-    @FXML
-    public void initialize() {
-        System.out.println("Initialisation du contrôleur.");
-        if (listViewEmployes == null) {
-            System.err.println("Erreur : listViewEmployes n'est pas initialisé !");
-        }
-        if (listViewEmployesParProjet == null) {
-            System.err.println("Erreur : listViewEmployesParProjet n'est pas initialisé !");
-        }
-    }
-
     // Rafraîchit la liste des membres du projet
     private void rafraichirListeEmployes() {
         projet.setMembres(projetDAO.getEmployesByProjetId(projet.getId()));
