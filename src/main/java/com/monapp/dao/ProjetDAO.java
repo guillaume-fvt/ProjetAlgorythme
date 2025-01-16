@@ -34,37 +34,6 @@ public class ProjetDAO {
         }
     }
 
-    // Récupérer un projet par son ID (avec tâches et employés associés)
-    public Projet getProjetById(int id) {
-        String query = "SELECT * FROM Projet WHERE id = ?";
-        Projet projet = null;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setInt(1, id);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    projet = new Projet();
-                    projet.setId(rs.getInt("id"));
-                    projet.setNom(rs.getString("nom"));
-                    projet.setDateDebut(rs.getDate("date_debut").toLocalDate());
-                    projet.setDateFin(rs.getDate("date_fin").toLocalDate());
-
-                    // Charger les tâches associées
-                    projet.setListeTaches(getTachesByProjetId(projet.getId()));
-
-                    // Charger les employés associés
-                    projet.setMembres(getEmployesByProjetId(projet.getId()));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return projet;
-    }
-
     // Récupérer tous les projets de la base de données
     public List<Projet> getTousLesProjets() {
         String query = "SELECT * FROM Projet";
