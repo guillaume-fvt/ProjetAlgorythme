@@ -43,36 +43,48 @@ public class MembresProjetController {
 
     // Charge les employés disponibles (non membres du projet)
     public void chargerEmployesDisponibles() {
-        if (listViewEmployes == null) {
-            System.err.println("Erreur : listViewEmployes n'est pas initialisé !");
-            return;
-        }
-        if (projet == null) {
-            System.err.println("Erreur : le projet n'est pas initialisé !");
-            return;
-        }
-        if (projet.getMembres() == null) {
-            System.err.println("Erreur : les membres du projet ne sont pas initialisés !");
-            return;
-        }
-
         try {
+            // Vérification que le projet est défini
+            if (projet == null) {
+                System.err.println("Erreur : le projet n'est pas défini !");
+                return;
+            }
+
+            // Vérification que la ListView est initialisée
+            if (listViewEmployes == null) {
+                System.err.println("Erreur : la ListView listViewEmployes n'est pas initialisée !");
+                return;
+            }
+
+            // Initialiser le DAO
             EmployeDAO employeDAO = new EmployeDAO();
-            List<Employe> employes = employeDAO.getAllEmployes(); // Charger tous les employés depuis la base
+            List<Employe> employes = employeDAO.getAllEmployes(); // Charger tous les employés
+
+            // Vérifier que la liste des employés a été récupérée
+            if (employes == null) {
+                System.err.println("Erreur : impossible de récupérer la liste des employés !");
+                return;
+            }
 
             // Filtrer les employés qui ne sont pas déjà membres du projet
             List<Employe> employesDisponibles = employes.stream()
-                    .filter(employe -> projet.getMembres().stream()
-                            .noneMatch(membre -> membre.getId() == employe.getId()))
+                    .filter(employe -> projet.getMembres() != null &&
+                            projet.getMembres().stream()
+                                    .noneMatch(membre -> membre.getId() == employe.getId()))
                     .collect(Collectors.toList());
 
             // Mettre à jour la ListView avec les employés disponibles
             listViewEmployes.getItems().setAll(employesDisponibles);
+
+            System.out.println("Employés disponibles chargés avec succès.");
+
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement des employés disponibles : " + e.getMessage());
+            // Gestion des erreurs
+            System.err.println("Une erreur s'est produite lors du chargement des employés disponibles : " + e.getMessage());
             e.printStackTrace();
         }
     }
+
 
 
     public void chargerEmployesPourUnProjet(int id) {
@@ -178,8 +190,6 @@ public class MembresProjetController {
             e.printStackTrace();
         }
     }
-
-
 
     @FXML
     public void fermerFenetre() {

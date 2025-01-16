@@ -1,6 +1,8 @@
 package com.monapp.dao;
 import com.monapp.model.Employe;
 import com.monapp.database.DatabaseConnection;
+import com.monapp.model.Projet;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,5 +108,32 @@ public class EmployeDAO {
             e.printStackTrace();
         }
     }
+
+    public List<Projet> getProjetsParEmploye(int employeId) {
+        List<Projet> projets = new ArrayList<>();
+        String query = "SELECT p.* FROM Projet p "
+                + "INNER JOIN Employe_Projet ep ON p.id = ep.projet_id "
+                + "WHERE ep.employe_id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, employeId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                projets.add(new Projet(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        rs.getDate("date_debut").toLocalDate(),
+                        rs.getDate("date_fin").toLocalDate()
+
+                        ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return projets;
+    }
+
 }
 

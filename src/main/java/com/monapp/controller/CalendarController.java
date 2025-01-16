@@ -24,10 +24,13 @@ public class CalendarController {
     @FXML
     private GridPane calendarGrid;
 
-    private ApplicationManager applicationManager;
+    @FXML
+    private Label monthLabel;
 
+    private ApplicationManager applicationManager;
     private TacheDAO tacheDAO;
     private List<Tache> listeTaches;
+    private YearMonth moisCourant;
 
     public static void ouvrirCalendarScene(ApplicationManager am, Window parentWindow) {
         try {
@@ -53,15 +56,25 @@ public class CalendarController {
         this.applicationManager = am;
         afficherCalendrier(LocalDate.now());
     }
+
     @FXML
     public void initialize() {
         this.tacheDAO = new TacheDAO();
         this.listeTaches = tacheDAO.getToutesLesTaches(); // Charger les tâches depuis la base
-        afficherCalendrier(LocalDate.now()); // Afficher le calendrier avec les tâches
+        this.moisCourant = YearMonth.now();
+        afficherCalendrierDuMois();
     }
 
     /**
-     * Construit un calendrier pour le mois de "dateCourante" (par ex. LocalDate.now()).
+     * Affiche le calendrier pour le mois actuel stocké dans "moisCourant".
+     */
+    private void afficherCalendrierDuMois() {
+        afficherCalendrier(moisCourant.atDay(1));
+        monthLabel.setText(moisCourant.getMonth().toString() + " " + moisCourant.getYear());
+    }
+
+    /**
+     * Construit un calendrier pour le mois de la date fournie.
      */
     private void afficherCalendrier(LocalDate dateCourante) {
         // On nettoie le grid
@@ -69,7 +82,7 @@ public class CalendarController {
         calendarGrid.setGridLinesVisible(true);
 
         // Noms des jours en en-tête
-        String[] jours = {"Lun","Mar","Mer","Jeu","Ven","Sam","Dim"};
+        String[] jours = {"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"};
         for (int col = 0; col < 7; col++) {
             Label lblJour = new Label(jours[col]);
             lblJour.setStyle("-fx-font-weight: bold; -fx-padding: 5;");
@@ -79,38 +92,28 @@ public class CalendarController {
         YearMonth ym = YearMonth.from(dateCourante);
         LocalDate premierJour = ym.atDay(1);
 
-        // Jour de la semaine (1 = lundi, 7=dimanche)
         int premierJourSemaine = premierJour.getDayOfWeek().getValue();
-        // En Java, Lundi=1 ... Dimanche=7
-
-        // Index dans la grille : la ligne 1 (row=1) correspond à la 1ère semaine
         int dayCounter = 1;
         int totalDays = ym.lengthOfMonth();
 
-        // On fait un maximum de 6 lignes
         int row = 1;
         while (dayCounter <= totalDays) {
             for (int col = 0; col < 7; col++) {
-                // Calcul si on est avant le "premierJourSemaine"
-                if ((row == 1 && col+1 < premierJourSemaine) || (dayCounter > totalDays)) {
-                    // Case vide
+                if ((row == 1 && col + 1 < premierJourSemaine) || (dayCounter > totalDays)) {
                     calendarGrid.add(new Label(""), col, row);
                 } else {
                     LocalDate currentDate = LocalDate.of(ym.getYear(), ym.getMonth(), dayCounter);
 
-                    // Récupérer les tâches pour ce jour
                     List<Tache> tachesDuJour = listeTaches.stream()
                             .filter(t -> currentDate.equals(t.getDateLimite()))
                             .collect(Collectors.toList());
 
-                    // Construire un label
                     VBox boxJour = new VBox();
                     boxJour.setPadding(new Insets(5));
                     Label lblDate = new Label(String.valueOf(dayCounter));
                     lblDate.setStyle("-fx-font-weight: bold;");
                     boxJour.getChildren().add(lblDate);
 
-                    // Ajouter un label par tâche
                     for (Tache t : tachesDuJour) {
                         Label lblTache = new Label(" • " + t.getTitre() + " (" + t.getStatut() + ")");
                         lblTache.setStyle("-fx-font-size: 10;");
@@ -122,7 +125,19 @@ public class CalendarController {
                 }
             }
             row++;
-            if (row > 6) break; // sécurité
+            if (row > 6) break;
         }
+    }
+
+    @FXML
+    private void moisPrecedent() {
+        this.moisCourant = this.moisCourant.minusMonths(1);
+        afficherCalendrierDuMois();
+    }
+
+    @FXML
+    private void moisSuivant() {
+        this.moisCourant = this.moisCourant.plusMonths(1);
+        afficherCalendrierDuMois();
     }
 }

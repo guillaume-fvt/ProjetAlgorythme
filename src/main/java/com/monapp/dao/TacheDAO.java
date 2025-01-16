@@ -9,6 +9,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TacheDAO {
 
@@ -173,6 +174,7 @@ public class TacheDAO {
             e.printStackTrace();
         }
     }
+
     public void supprimerTacheAuProjet(int tacheId, int projetId) {
         String query = "UPDATE Tache SET projet_id = NULL WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -185,5 +187,89 @@ public class TacheDAO {
         }
     }
 
+    public List<Tache> getTachesParProjets(List<Integer> projetIds) {
+        List<Tache> taches = new ArrayList<>();
+        if (projetIds.isEmpty()) {
+            return taches; // Aucun projet, pas de tâche
+        }
+        String requete = "SELECT * FROM Tache WHERE projet_id IN ("
+                + projetIds.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ")AND employe_id IS NULL";
+
+        try (Connection connexion = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(requete)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                taches.add(new Tache(
+                        resultSet.getInt("id"),
+                        resultSet.getString("titre"),
+                        resultSet.getString("description"),
+                        StatutTache.valueOf(resultSet.getString("statut")), // Conversion en Enum
+                        resultSet.getBoolean("priorite") ? 1 : 0,
+                        resultSet.getDate("date_limite").toLocalDate(),
+                        null,
+                        null
+                )); // Ajout de la parenthèse fermante ici
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return taches;
+    }
+
+    public List<Tache> recupererTachesAffectees(int employeId) {
+        List<Tache> tachesAffectees = new ArrayList<>();
+        String requete = " SELECT * FROM tache WHERE employe_id = ?";
+
+        try (Connection connexion = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connexion.prepareStatement(requete)) {
+
+            preparedStatement.setInt(1, employeId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Tache tache = new Tache();
+                    tache.setId(resultSet.getInt("id"));
+                    tache.setTitre(resultSet.getString("titre"));
+                    tache.setDescription(resultSet.getString("description"));
+                    tache.setDateLimite(resultSet.getDate("date_limite").toLocalDate());
+                    tache.setStatut(StatutTache.valueOf(resultSet.getString("statut")));
+                    tache.setPriorite(resultSet.getBoolean("priorite") ? 1 : 0);
+                    tache.setProjetId(resultSet.getInt("projet_id"));
+
+                    tachesAffectees.add(tache);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tachesAffectees;
+    }
+
+    public void ajouterEmployeAUneTache(int tacheId, Integer employeId){
+        String query = "UPDATE Tache SET employe_id = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, employeId);
+            pstmt.setInt(2, tacheId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void supprimerEmployeAUneTache(int tacheId){
+        String query = "UPDATE Tache SET employe_id = NULL WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tacheId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

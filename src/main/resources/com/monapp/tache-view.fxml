@@ -8,25 +8,38 @@
             prefHeight="480.0" prefWidth="600.0">
 
     <children>
-        <Label layoutX="14.0" layoutY="14.0" text="Gestion des Tâches" />
+        <!-- Title Label -->
+        <Label layoutX="14.0" layoutY="14.0" text="Gestion des Tâches"
+               style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
 
-        <TableView fx:id="tableTaches" layoutX="14.0" layoutY="40.0"
-                   prefWidth="470.0" prefHeight="200.0">
+        <!-- TableView for Tasks -->
+        <TableView fx:id="tableTaches" layoutX="14.0" layoutY="50.0"
+                   prefWidth="572.0" prefHeight="200.0"
+                   style="-fx-background-color: #ffffff; -fx-border-color: #c5c5c5; -fx-border-radius: 5;">
             <columns>
-                <TableColumn fx:id="colTitre"      text="Titre"     prefWidth="150.0"/>
-                <TableColumn fx:id="colStatut"     text="Statut"    prefWidth="80.0"/>
-                <TableColumn fx:id="colDateLimite" text="Deadline"  prefWidth="120.0"/>
-                <TableColumn fx:id="colPrioritaire" text="Prioritaire?" prefWidth="120.0"/>
+                <TableColumn fx:id="colTitre"      text="Titre"       prefWidth="150.0" />
+                <TableColumn fx:id="colStatut"     text="Statut"      prefWidth="100.0" />
+                <TableColumn fx:id="colDateLimite" text="Deadline"    prefWidth="150.0" />
+                <TableColumn fx:id="colPrioritaire" text="Prioritaire" prefWidth="150.0" />
             </columns>
         </TableView>
 
-        <TextField fx:id="tfTitre"       layoutX="14.0"  layoutY="260.0" promptText="Titre" />
-        <TextArea  fx:id="taDescription" layoutX="14.0"  layoutY="300.0"
-                   prefWidth="200.0" prefHeight="80.0" promptText="Description" />
-        <ComboBox  fx:id="cbStatut"      layoutX="240.0" layoutY="260.0" />
-        <CheckBox  fx:id="cbPrioritaire" layoutX="240.0" layoutY="300.0" text="Prioritaire ?" />
-        <DatePicker fx:id="dpDateLimite" layoutX="240.0" layoutY="340.0" promptText="Date Limite" />
+        <!-- Form Fields -->
+        <VBox layoutX="14.0" layoutY="260.0" spacing="12">
+            <TextField fx:id="tfTitre" promptText="Titre"
+                       style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 4; -fx-padding: 6;" />
+            <TextArea fx:id="taDescription" promptText="Description" prefWidth="200.0" prefHeight="80.0"
+                      style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 4;" />
+        </VBox>
 
+        <VBox layoutX="240.0" layoutY="260.0" spacing="12">
+            <ComboBox fx:id="cbStatut" promptText="Statut"
+                      style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 4;" />
+            <CheckBox fx:id="cbPrioritaire" text="Prioritaire ?"
+                      style="-fx-font-size: 14;" />
+            <DatePicker fx:id="dpDateLimite" promptText="Date Limite"
+                        style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 4;" />
+        </VBox>
         <Button layoutX="420.0" layoutY="260.0" text="Ajouter"   onAction="#ajouterTache"/>
         <Button layoutX="420.0" layoutY="300.0" text="Modifier"  onAction="#modifierTache"/>
         <Button layoutX="420.0" layoutY="340.0" text="Supprimer" onAction="#supprimerTache"/>

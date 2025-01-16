@@ -6,9 +6,15 @@ import com.monapp.model.ApplicationManager;
 import com.monapp.model.Employe;
 import com.monapp.model.Projet;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +26,6 @@ public class EmployeController {
 
     private ApplicationManager applicationManager;
     private EmployeDAO employeDAO = new EmployeDAO();
-
 
     @FXML
     private TableView<Employe> tableEmployes;
@@ -56,7 +61,6 @@ public class EmployeController {
             }
         });
     }
-
 
     public void setApplicationManager(ApplicationManager manager) {
         this.applicationManager = manager;
@@ -215,7 +219,76 @@ public class EmployeController {
         alert.setContentText(message.toString());
         alert.showAndWait();
     }
+    @FXML
+    public void AffecterTache() {
+        Employe selected = tableEmployes.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun employé sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un employé dans la table avant d'ajouter des tâches.");
+            alert.showAndWait();
+            return;
+        }
 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/tache-employe-ajouter-view.fxml"));
+            AnchorPane root = loader.load();
+
+            // Récupérer le contrôleur associé à la vue
+            TachesEmployeController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setEmploye(selected);
+
+            // Charger la liste des employés depuis la base
+            controller.chargerTacheDisponiblePourUnEmploye(selected.getId());
+
+            // Afficher la fenêtre
+            Stage stage = new Stage();
+            stage.setTitle("Affecter des tâches à " + selected.getNom());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    public void DissocierTache() {
+        Employe selected = tableEmployes.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun employé sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un employé dans la table avant d'ajouter des tâches.");
+            alert.showAndWait();
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-employe-supprimer-view.fxml"));
+            AnchorPane root = loader.load();
+
+            // Récupérer le contrôleur associé à la vue
+            TachesEmployeController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setEmploye(selected);
+
+            // Charger la liste des employés depuis la base
+            controller.chargerTachePourUnEmploye(selected.getId());
+
+            // Afficher la fenêtre
+            Stage stage = new Stage();
+            stage.setTitle("Dissocier des tâches à " + selected.getNom());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

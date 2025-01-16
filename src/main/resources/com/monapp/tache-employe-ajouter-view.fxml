@@ -1,38 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.monapp.controller.MembresProjetController"
-            prefHeight="400.0" prefWidth="500.0"
+            fx:controller="com.monapp.controller.TachesEmployeController"
             style="-fx-background-color: #f4f4f9; -fx-padding: 20;">
-
     <children>
         <!-- Title -->
-        <Label text="Gestion des Membres du Projet"
+        <Label text="Gestion des Taches d'un employé"
                style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
                AnchorPane.topAnchor="10" AnchorPane.leftAnchor="14" />
 
-        <!-- Left Section: List of Available Employees -->
+        <!-- Left Section: List of Available Tasks -->
         <VBox spacing="10.0" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="14">
             <children>
-                <Label text="Employés Disponibles"
+                <Label text="Tâches Disponibles"
                        style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
-                <ListView fx:id="listViewEmployes" prefHeight="300.0" prefWidth="200.0"
+                <ListView fx:id="listViewTachesNonAffectees" prefHeight="300.0" prefWidth="200.0"
                           style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 5;" />
+                <ListView fx:id="listViewTachesAffectees" visible="false" managed="false" />
             </children>
         </VBox>
 
-        <!-- Right Section: Buttons -->
-        <VBox spacing="20.0" AnchorPane.topAnchor="100" AnchorPane.rightAnchor="14">
+        <!-- Right Section: Action Buttons -->
+        <VBox spacing="20.0" AnchorPane.topAnchor="100" AnchorPane.rightAnchor="12">
             <children>
-                <Button fx:id="btnAjouterMembre" text="Ajouter au Projet"
-                        style="-fx-background-color: #4caf50; -fx-text-fill: white; -fx-font-weight: bold;"
-                        onAction="#ajouterMembreAuProjet" />
-                <Button fx:id="btnFermer" text="Fermer"
+                <Button fx:id="btnAffecterTache" text="Affecter Tâche"
                         style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;"
+                        onAction="#ajouterTacheAUnEmploye" />
+                <Button fx:id="btnFermer" text="Fermer"
+                        style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold;"
                         onAction="#fermerFenetre" />
             </children>
         </VBox>

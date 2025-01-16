@@ -1,15 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.monapp.controller.CalendarController"
             prefWidth="600.0" prefHeight="400.0">
 
     <children>
-        <GridPane fx:id="calendarGrid" layoutX="14.0" layoutY="14.0"
-                  prefWidth="570.0" prefHeight="370.0"
-                  gridLinesVisible="false">
-            <!-- Le contrôleur va remplir dynamiquement -->
-        </GridPane>
+        <VBox alignment="CENTER" spacing="10" prefWidth="570.0" prefHeight="400.0">
+            <HBox spacing="20" alignment="CENTER">
+                <Button text="mois précédent" onAction="#moisPrecedent" />
+                <Label fx:id="monthLabel" text="Janvier 2025"
+                       style="-fx-font-size: 18; -fx-font-weight: bold;" />
+                <Button text="mois suivant" onAction="#moisSuivant" />
+            </HBox>
+
+            <GridPane fx:id="calendarGrid" gridLinesVisible="true"
+                      prefWidth="570.0" prefHeight="370.0"
+                      style="-fx-border-color: lightgrey; -fx-border-radius: 5; -fx-padding: 10;">
+                <!-- Contenu généré dynamiquement -->
+            </GridPane>
+        </VBox>
     </children>
 </AnchorPane>

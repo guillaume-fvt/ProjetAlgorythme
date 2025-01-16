@@ -30,7 +30,6 @@ public class TachesProjetController {
 
     public void setApplicationManager(ApplicationManager applicationManager) {
         this.applicationManager = applicationManager;
-        rafraichirTableTaches();
     }
 
     public void setProjet(Projet projet) {
@@ -145,7 +144,10 @@ public class TachesProjetController {
 
     private void rafraichirTableTaches() {
         if (applicationManager != null && tableTaches != null) {
-            List<Tache> tachesNonAssignees = applicationManager.getListeTaches().stream()
+
+            TacheDAO tacheDAO = new TacheDAO();
+            List<Tache> toutesLesTaches = tacheDAO.getToutesLesTaches();
+            List<Tache> tachesNonAssignees = toutesLesTaches.stream()
                     .filter(tache -> tache.getProjetId() == null || tache.getProjetId() == 0) // Filtre
                     .collect(Collectors.toList());
 

@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.monapp.controller.MembresProjetController"
-            prefHeight="300.0" prefWidth="400.0">
+            prefHeight="400.0" prefWidth="500.0"
+            style="-fx-background-color: #f4f4f9; -fx-padding: 20;">
+
     <children>
-        <Label layoutX="14.0" layoutY="14.0" text="Liste du Personnel pour ce projet" />
+        <!-- Title -->
+        <Label text="Gestion des Membres du Projet"
+               style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"
+               AnchorPane.topAnchor="10" AnchorPane.leftAnchor="14" />
 
-        <ListView fx:id="listViewEmployesParProjet" layoutX="14" layoutY="40"
-                  prefHeight="200.0" prefWidth="200.0" />
-        <ListView fx:id="ListViewEmployes" visible="false" managed="false" />
-        <Button fx:id="btnDissocierMembre" layoutX="240.0" layoutY="40.0"
-                text="Dissocier Membre" onAction="#DissocierMembreAuProjet"/>
-        <Button fx:id="btnFermer" layoutX="240.0" layoutY="90.0"
-                text="Fermer" onAction="#fermerFenetre"/>
+        <!-- Section: List of Project Members -->
+        <VBox spacing="10.0" AnchorPane.topAnchor="50" AnchorPane.leftAnchor="14">
+            <children>
+                <Label text="Membres du Projet"
+                       style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                <ListView fx:id="listViewEmployesParProjet" prefHeight="300.0" prefWidth="250.0"
+                          style="-fx-background-color: #ffffff; -fx-border-color: #dcdcdc; -fx-border-radius: 5;" />
+            </children>
+        </VBox>
+
+        <!-- Right Section: Action Buttons -->
+        <VBox spacing="20.0" AnchorPane.topAnchor="100" AnchorPane.rightAnchor="14">
+            <children>
+                <Button fx:id="btnDissocierMembre" text="Dissocier du Projet"
+                        style="-fx-background-color: #f44336; -fx-text-fill: white; -fx-font-weight: bold;"
+                        onAction="#DissocierMembreAuProjet" />
+                <Button fx:id="btnFermer" text="Fermer"
+                        style="-fx-background-color: #757575; -fx-text-fill: white; -fx-font-weight: bold;"
+                        onAction="#fermerFenetre" />
+            </children>
+        </VBox>
     </children>
-
 </AnchorPane>

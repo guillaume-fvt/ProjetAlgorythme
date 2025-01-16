@@ -24,20 +24,20 @@ public class MainController {
 
     @FXML
     public void handleMenuEmployes() {
-        ouvrirNouvelleFenetre("/com/monapp/employe-view.fxml", "Gestion des Employés");
+        loadView("/com/monapp/employe-view.fxml", "Gestion des Employés");
     }
 
     @FXML
     public void handleMenuProjets() {
-        ouvrirNouvelleFenetre("/com/monapp/projet-view.fxml", "Gestion des Projets");
+        loadView("/com/monapp/projet-view.fxml", "Gestion des Projets");
     }
 
     @FXML
     public void handleMenuTaches() {
-        ouvrirNouvelleFenetre("/com/monapp/tache-view.fxml", "Gestion des Tâches");
+        loadView("/com/monapp/tache-view.fxml", "Gestion des Tâches");
     }
 
-    private void ouvrirNouvelleFenetre(String cheminFXML, String titreFenetre) {
+    private void loadView(String cheminFXML, String titreFenetre) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(cheminFXML));
             AnchorPane root = loader.load();
@@ -51,14 +51,7 @@ public class MainController {
                 ((TacheController) controller).setApplicationManager(this.applicationManager);
             }
 
-            Stage fenetre = new Stage();
-            fenetre.setTitle(titreFenetre);
-            fenetre.initModality(Modality.WINDOW_MODAL);
-            fenetre.initOwner(mainBorderPane.getScene().getWindow());
-
-            Scene scene = new Scene(root);
-            fenetre.setScene(scene);
-            fenetre.show();
+            mainBorderPane.setCenter(root);
 
         } catch (IOException e) {
             e.printStackTrace();
