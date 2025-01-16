@@ -102,19 +102,11 @@ public class ApplicationManager {
         return listeTaches;
     }
     public void ajouterTacheAuProjet(int tacheId, int projetId) {
-        // Rechercher la tâche par son ID
-        Tache tache = getListeTaches().stream()
-                .filter(t -> t.getId() == tacheId)
-                .findFirst()
-                .orElse(null);
-
-        if (tache != null) {
-            // Associer la tâche au projet
-            tache.setProjetId(projetId);
             tacheDAO.assignerTacheAuProjet(tacheId, projetId);
-        } else {
-            System.err.println("Erreur : Tâche avec ID " + tacheId + " introuvable.");
-        }
+
+    }
+    public void supprimerTacheAuProjet(int tacheId, int projetId) {
+            tacheDAO.supprimerTacheAuProjet(tacheId, projetId);
     }
 
 }

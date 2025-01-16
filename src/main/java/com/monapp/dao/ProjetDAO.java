@@ -192,6 +192,19 @@ public class ProjetDAO {
             e.printStackTrace();
         }
     }
+    public void supprimerEmployeAuProjet(int employeId) {
+        String query = "DELETE FROM Employe_Projet WHERE (employe_Id=?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, employeId);
+            pstmt.executeUpdate();
+
+            System.out.println("Employé " + employeId + " supprimé au projet ");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     // Supprimer un projet et ses relations
     public void supprimerProjet(int id) {

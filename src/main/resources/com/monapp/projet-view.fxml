@@ -30,6 +30,8 @@
         <Button layoutX="420.0" layoutY="300.0" text="Placer Membres"  onAction="#placerMembres" />
         <Button text="Générer Rapport" onAction="#genererRapportProjetsCSV" layoutX="420" layoutY="340"  />
         <Button text="Vérifier les Notifications" onAction="#verifierNotifications" layoutX="420" layoutY="380" />
+        <Button text="Dissocier Tâches" onAction="#decomposerTaches" layoutX="420" layoutY="420"  />
+        <Button text="Dissocier un membre" onAction="#DissocierMembres" layoutX="250" layoutY="380"  />
 
     </children>
 </AnchorPane>

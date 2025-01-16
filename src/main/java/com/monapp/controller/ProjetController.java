@@ -1,7 +1,6 @@
 package com.monapp.controller;
 
 import com.monapp.dao.ProjetDAO;
-import com.monapp.dao.TacheDAO;
 import com.monapp.model.StatutTache;
 import com.monapp.model.ApplicationManager;
 import com.monapp.model.Projet;
@@ -21,15 +20,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProjetController {
 
     private ApplicationManager applicationManager;
     private final ProjetDAO projetDAO = new ProjetDAO();
 
-    @FXML
-    private TableView<Tache> tableTaches;
     @FXML
     private TableView<Projet> tableProjets;
     @FXML
@@ -158,7 +154,7 @@ public class ProjetController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/membres-projet-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/ajouter-membres-projet-view.fxml"));
             AnchorPane root = loader.load();
 
             // Récupérer le contrôleur associé à la vue
@@ -176,12 +172,45 @@ public class ProjetController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
-            // Rafraîchir la table après fermeture de la fenêtre
-            rafraichirTable();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void DissocierMembres(){
+        Projet selected = tableProjets.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table avant d'ajouter des membres.");
+            alert.showAndWait();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/Dissocier-membres-projet-view.fxml"));
+            AnchorPane root = loader.load();
+
+            // Récupérer le contrôleur associé à la vue
+            MembresProjetController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setProjet(selected);
+
+            // Charger la liste des employés depuis la base
+            controller.chargerEmployesPourUnProjet(selected.getId());
+
+            // Afficher la fenêtre
+            Stage stage = new Stage();
+            stage.setTitle("Dissocier Membres sur " + selected.getNom());
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -201,17 +230,14 @@ public class ProjetController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-selection-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-projet-ajouter-view.fxml"));
             AnchorPane root = loader.load();
 
-            TachesSelectionController controller = loader.getController();
+            TachesProjetController controller = loader.getController();
             controller.setApplicationManager(this.applicationManager);
             controller.setProjet(selectedProjet);
 
-            controller.setOnTaskAddedListener(() -> {
-                // Rafraîchir les tâches après ajout
-                rafraichirTableTaches();
-            });
+            controller.chargerTacheDisponibles();
 
             Stage stage = new Stage();
             stage.setTitle("Associer des Tâches");
@@ -224,36 +250,55 @@ public class ProjetController {
         }
     }
 
+    @FXML
+    public void decomposerTaches(){
+        Projet selectedProjet = tableProjets.getSelectionModel().getSelectedItem();
+        if (selectedProjet == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet.");
+            alert.showAndWait();
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/monapp/taches-projet-supprimer-view.fxml"));
+            AnchorPane root = loader.load();
+
+            TachesProjetController controller = loader.getController();
+            controller.setApplicationManager(this.applicationManager);
+            controller.setProjet(selectedProjet);
+
+            controller.chargerTachesLieesAuProjet();
+
+            Stage stage = new Stage();
+            stage.setTitle("Dissocier des Tâches");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.setScene(new Scene(root));
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void supprimerUnMembre(){
+        Projet selected = tableProjets.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun projet sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un projet dans la table avant d'ajouter des membres.");
+            alert.showAndWait();
+            return;
+        }
+    }
+
     private void rafraichirTable() {
         tableProjets.getItems().setAll(projetDAO.getTousLesProjets());
         tableProjets.refresh();
     }
-
-    private void rafraichirTableTaches() {
-        if (tableTaches == null) {
-            System.err.println("Erreur : tableTaches est null.");
-            return;
-        }
-        if (applicationManager == null) {
-            System.err.println("Erreur : applicationManager est null.");
-            return;
-        }
-
-        // Récupérer toutes les tâches depuis le gestionnaire d'application
-        List<Tache> toutesLesTaches = applicationManager.getListeTaches();
-
-        // Filtrer les tâches qui ne sont pas assignées à un projet
-        List<Tache> tachesNonAssignees = toutesLesTaches.stream()
-                .filter(tache -> tache.getProjetId() == 0 || tache.getProjetId() == null)
-                .collect(Collectors.toList());
-
-        // Mettre à jour la table avec les tâches filtrées
-        tableTaches.getItems().setAll(tachesNonAssignees);
-        tableTaches.refresh();
-    }
-
-
-
     @FXML
     public void genererRapportProjetsCSV() {
         // Utiliser FileChooser pour choisir où enregistrer le fichier

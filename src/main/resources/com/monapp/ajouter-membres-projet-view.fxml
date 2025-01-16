@@ -12,7 +12,7 @@
 
         <ListView fx:id="listViewEmployes" layoutX="14.0" layoutY="40.0"
                   prefHeight="200.0" prefWidth="200.0" />
-
+        <ListView fx:id="ListViewEmployesParProjet" visible="false" managed="false" />
         <Button fx:id="btnAjouterMembre" layoutX="240.0" layoutY="40.0"
                 text="Ajouter Membre" onAction="#ajouterMembreAuProjet"/>
         <Button fx:id="btnFermer" layoutX="240.0" layoutY="90.0"

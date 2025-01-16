@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.monapp.controller.TachesSelectionController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.monapp.controller.TachesProjetController">
     <VBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
         <Label text="Sélectionnez des tâches à ajouter au projet" />
         <TableView fx:id="tableTaches" prefHeight="300.0" prefWidth="350">
@@ -12,6 +12,10 @@
                 <TableColumn fx:id="colStatut" text="Statut" prefWidth="150.0" />
             </columns>
         </TableView>
-        <Button text="Ajouter Tâches" onAction="#ajouterTachesAuProjet" />
+        <TableView fx:id="tableTachesASupprimer" visible="false" managed="false" />
+        <Button text="Ajouter Tâche" onAction="#ajouterTachesAuProjet" />
+
+        <Button fx:id="btnFermer" layoutX="220.0" layoutY="320.0"
+                text="Fermer" onAction="#fermerFenetre"/>
     </VBox>
 </AnchorPane>

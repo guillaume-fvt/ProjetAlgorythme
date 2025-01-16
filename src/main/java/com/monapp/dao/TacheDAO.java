@@ -160,19 +160,7 @@ public class TacheDAO {
 
         return tache;
     }
-    public void mettreAJourProjetId(Tache tache) {
-        String query = "UPDATE Tache SET projet_id = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setInt(1, tache.getProjetId());
-            pstmt.setInt(2, tache.getId());
-            pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     public void assignerTacheAuProjet(int tacheId, int projetId) {
         String query = "UPDATE Tache SET projet_id = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -180,6 +168,17 @@ public class TacheDAO {
 
             pstmt.setInt(1, projetId);
             pstmt.setInt(2, tacheId);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void supprimerTacheAuProjet(int tacheId, int projetId) {
+        String query = "UPDATE Tache SET projet_id = NULL WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, tacheId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

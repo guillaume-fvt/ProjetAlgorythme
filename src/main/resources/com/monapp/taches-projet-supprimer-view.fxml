@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.monapp.controller.TachesProjetController">
+    <VBox spacing="10" alignment="CENTER" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+        <Label text="Sélectionnez des tâches à dissocier du projet" />
+    <TableView fx:id="tableTachesASupprimer" prefHeight="300.0" prefWidth="350">
+    <columns>
+        <TableColumn fx:id="colTitre" text="Titre" prefWidth="200.0" />
+        <TableColumn fx:id="colStatut" text="Statut" prefWidth="150.0" />
+    </columns>
+    </TableView>
+        <TableView fx:id="tableTaches" visible="false" managed="false" />
+    <Button text="Dissocier Tache" onAction="#supprimerTachesAuProjet" layoutY="320" layoutX="100" />
+
+    <Button fx:id="btnFermer" layoutX="250.0" layoutY="320.0"
+        text="Fermer" onAction="#fermerFenetreTacheASupprimer" />
+    </VBox>
+
+</AnchorPane>
